@@ -1,0 +1,5 @@
+import rospy
+from sensor_msgs.msg import CompressedImage
+
+class AutoDoorDetector:
+    def __init__(self)
