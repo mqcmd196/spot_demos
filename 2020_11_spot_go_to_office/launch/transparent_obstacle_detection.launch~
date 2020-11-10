@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="RGB_IMAGE" value="/coaxial_camera/inference/segmentation" />
+  <node name="rgb_decompress" pkg="image_transport" type="republish" args="compressed in:=$(arg RGB_IMAGE) out:=$(arg RGB_IMAGE)" />
+</launch>
+	   
+  
