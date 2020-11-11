@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 import rospy
 import cv2
@@ -42,19 +42,19 @@ class AutoDoorDetector:
         hsv_max = np.array([30, 255, 255])
         mask1 = cv2.inRange(hsv_img, hsv_min, hsv_max)
         
-        # hsv 2
+        # hsv2
         hsv_min = np.array([150, 243, 50])
         hsv_max = np.array([179, 255, 255])
         mask2 = cv2.inRange(hsv_img, hsv_min, hsv_max)
         
         # masking
-        masked_hsv_img = mask1 + mask2
-        
-        # convert to bgr
-        masked_img = cv2.cvtColor(masked_hsv_img, cv2.COLOR_HSV2BGR)
+        masked_hsv_grayscale_img = mask1 + mask2
 
+        # convert to bgr
+        masked_hsv_img = cv2.cvtColor(masked_hsv_grayscale_img, cv2.COLOR_GRAY2RGB)
+        
         # convert to ros message
-        masked_img_message = bridge.cv2_to_imgmsg(masked_img, "bgr8")
+        masked_img_message = self.bridge.cv2_to_imgmsg(masked_hsv_img, "bgr8")
         
         return masked_img_message
 
