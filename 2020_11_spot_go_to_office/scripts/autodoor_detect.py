@@ -12,7 +12,7 @@ class AutoDoorDetector:
     def __init__(self):
         rospy.init_node('autodoor_detector', anonymous=True)
         self.sub = rospy.Subscriber('/coaxial_camera/inference/segmentation', Image, self.callback)
-        self.pub_bool = rospy.Publisher('/tranparent_obstacle_state', Bool, queue_size=1)
+        self.pub_bool = rospy.Publisher('/tranparent_obstacle', Bool, queue_size=1)
         self.pub_image = rospy.Publisher('/coaxial_camera/inference/segmentation/red_filtered', Image, queue_size=1)
         self.pub_rate = rospy.Publisher('/coaxial_camera/inference/segmentation/red_rate', Float64, queue_size=1)
 
@@ -46,7 +46,7 @@ class AutoDoorDetector:
         if self.red_pixel_rate > self.auto_door_detect_pixel_th:
             self.transparent_obstacle = True
         else:
-            self.tranparent_obstacle = False
+            self.transparent_obstacle = False
         
     def red_color_pass_filter(self, data):
         # convert to cv2 style
