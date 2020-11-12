@@ -6,7 +6,7 @@ from cv_bridge import CvBridge
 import numpy as np
 
 from sensor_msgs.msg import Image
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, Float64
 
 class AutoDoorDetector:
     def __init__(self):
@@ -14,20 +14,26 @@ class AutoDoorDetector:
         self.sub = rospy.Subscriber('/coaxial_camera/inference/segmentation', Image, self.callback)
         self.pub_bool = rospy.Publisher('/tranparent_obstacle_state', Bool, queue_size=1)
         self.pub_image = rospy.Publisher('/coaxial_camera/inference/segmentation/red_filtered', Image, queue_size=1)
+        self.pub_rate = rospy.Publisher('/coaxial_camera/inference/segmentation/red_rate', Float64, queue_size=1)
 
         self.bridge = CvBridge()
         
         # initialize variable
         self.filtered_image = False
         self.transparent_obstacle = False
+        self.red_pixel_rate = 0
 
     def callback(self, data):
         self.filtered_publisher(data)
+        self.red_pixel_rate_publisher()
         # self.bool_publisher(data)
 
     def filtered_publisher(self, img_message):
         self.filtered_image = self.red_color_pass_filter(img_message)
         self.pub_image.publish(self.filtered_image)
+
+    def red_pixel_rate_publisher(self):
+        self.pub_rate.publish(self.red_pixel_rate)
         
     def red_color_pass_filter(self, data):
         # convert to cv2 style
@@ -49,6 +55,11 @@ class AutoDoorDetector:
         
         # masking
         masked_hsv_img = mask1 + mask2
+
+        # count white pixel
+        pixel_sum = masked_hsv_img.shape[0] * masked_hsv_img.shape[1]
+        while_pixel_sum = np.sum(pixel_sum == 255)
+        self.red_pixel_rate = white_pixel_sum / pixel_sum
         
         # convert to bgr
         masked_img = cv2.cvtColor(masked_hsv_img, cv2.COLOR_HSV2BGR)
