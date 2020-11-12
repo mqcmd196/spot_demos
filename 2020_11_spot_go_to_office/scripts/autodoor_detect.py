@@ -17,6 +17,9 @@ class AutoDoorDetector:
         self.pub_rate = rospy.Publisher('/coaxial_camera/inference/segmentation/red_rate', Float64, queue_size=1)
 
         self.bridge = CvBridge()
+
+        # set parameter
+        self.auto_door_detect_pixel_th = 0.4
         
         # initialize variable
         self.filtered_image = False

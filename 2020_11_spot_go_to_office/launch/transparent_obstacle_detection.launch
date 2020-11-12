@@ -1,10 +1,12 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="RGB_IMAGE" value="/coaxial_camera/inference/segmentation" />
+  <arg name="RED_PIXEL_TH" value="0.4" />
   
   <!-- decompressing -->
   <node name="rgb_decompress" pkg="image_transport" type="republish" args="compressed in:=$(arg RGB_IMAGE) out:=$(arg RGB_IMAGE)" />
-  <!-- transparent obstacle -->
-</launch>
-	   
   
+  <!-- transparent obstacle -->
+  <node name="autodoor_detector" pkg="2020_11_spot_go_to_office" type="autodoor_detect.py" />
+  
+</launch>
