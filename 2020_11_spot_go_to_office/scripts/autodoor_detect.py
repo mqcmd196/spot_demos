@@ -29,7 +29,7 @@ class AutoDoorDetector:
     def callback(self, data):
         self.filtered_publisher(data)
         self.red_pixel_rate_publisher()
-        # self.bool_publisher(data)
+        self.bool_publisher(data)
 
     def filtered_publisher(self, img_message):
         self.filtered_image = self.red_color_pass_filter(img_message)
@@ -37,6 +37,16 @@ class AutoDoorDetector:
 
     def red_pixel_rate_publisher(self):
         self.pub_rate.publish(self.red_pixel_rate)
+
+    def bool_publisher(self):
+        self.transparent_obstacle_detector()
+        self.pub_bool.publish(self.transparent_obstacle)
+
+    def transparent_obstacle_detector(self):
+        if self.red_pixel_rate > self.auto_door_detect_pixel_th:
+            self.transparent_obstacle = True
+        else:
+            self.tranparent_obstacle = False
         
     def red_color_pass_filter(self, data):
         # convert to cv2 style
@@ -71,10 +81,6 @@ class AutoDoorDetector:
         masked_img_message = self.bridge.cv2_to_imgmsg(masked_hsv_img, "bgr8")
         
         return masked_img_message
-
-    # def bool_publisher(self, data):
-        # self.transparent_obstacle_detector(data)
-        # self.pub.publish(self.transparent_obstacle)
 
 if __name__ == '__main__':
     try:
