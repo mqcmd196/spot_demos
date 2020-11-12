@@ -29,7 +29,7 @@ class AutoDoorDetector:
     def callback(self, data):
         self.filtered_publisher(data)
         self.red_pixel_rate_publisher()
-        self.bool_publisher(data)
+        self.bool_publisher()
 
     def filtered_publisher(self, img_message):
         self.filtered_image = self.red_color_pass_filter(img_message)
