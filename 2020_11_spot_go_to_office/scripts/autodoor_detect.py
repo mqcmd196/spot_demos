@@ -58,8 +58,8 @@ class AutoDoorDetector:
 
         # count white pixel
         pixel_sum = masked_hsv_grayscale_img.shape[0] * masked_hsv_grayscale_img.shape[1]
-        white_pixel_sum = np.sum(pixel_sum == 255)
-        self.red_pixel_rate = white_pixel_sum / pixel_sum
+        white_pixel_sum = np.sum(masked_hsv_grayscale_img == 255)
+        self.red_pixel_rate = float(white_pixel_sum) / float(pixel_sum)
 
         # convert to bgr
         masked_hsv_img = cv2.cvtColor(masked_hsv_grayscale_img, cv2.COLOR_GRAY2RGB)
