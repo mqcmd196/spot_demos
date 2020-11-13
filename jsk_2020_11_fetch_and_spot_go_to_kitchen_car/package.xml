@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package>
+  <name>jsk_2020_11_fetch_and_spot_go_to_kitchen_car</name>
+  <version>0.0.0</version>
+  <description>Fetch and Spot go to kitchen car and buy lunch.</description>
+
+  <author email="mqcmd196@hotmail.co.jp">Yoshiki Obinata</author>
+  <maintainer email="mqcmd196@hotmail.co.jp">Yoshiki Obinata</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>spoteus</run_depend>
+
+  <export>
+  </export>
+</package>
