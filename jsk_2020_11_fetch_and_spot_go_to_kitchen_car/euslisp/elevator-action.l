@@ -5,7 +5,7 @@
 (load "package://jsk_fetch_startup/euslisp/navigation-utils.l")
 (load "speech-recognition-service.l")
 
-;; for passthrough service
+;; passthrough service
 (ros::roseus "passthrough")
 (ros::wait-for-service "/passthrough/request")
 (ros::wait-for-service "/passthrough/stop")
@@ -20,10 +20,10 @@
 	(send *ri* :go-pos 3.0 0 180)
 	(unix:sleep 1)
 	(send *ri* :speak-jp "エレベータに乗りました" :wait t)
-	
+
 	;; request pushing the button
 	(send *ri* :speak-jp (concatenate string "エレベータの" (string goal-floor) "階のボタンを押してください") :wait t)
-	(change-floor (concatenete string "/eng2/" (string goal-floor) "f"))
+	(change-floor (concatenate string "/eng2/" (string goal-floor) "f") :base-frame-name "/base_link")
 	(send *ri* :speak-jp (concatenate string "マップを" (string goal-floor) "階に切り替えました") :wait t)
 	(send *ri* :speak-jp "エレベータがついたら進んでと言ってください" :wait t)
 	(ros::service-call "/passthrough/request" *pass-req* t)
@@ -32,7 +32,7 @@
 	;; get off the elevator
 	(send *ri* :speak-jp "すすみます" :wait t)
 	(ros::service-call "/passthrough/stop" *pass-req* t)
-	(send *ri* :clear-constmap)
+	(send *ri* :clear-costmap)
 	(send *ri* :go-pos 3.5 0 0)
 	(unix:sleep 1)
 	(send *ri* :speak-jp "エレベータからおりました" :wait t)
