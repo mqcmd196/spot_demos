@@ -16,6 +16,7 @@
   (let ((building "/eng2/"))
 	
 	;; get on the elevator
+	(send *ri* :speak-jp "前に進みます" :wait t)
 	(send *ri* :clear-costmap)
 	(send *ri* :go-pos 3.0 0 180)
 	(unix:sleep 1)
@@ -30,7 +31,7 @@
 	(wait-for-julius-trigger "すすんで")
 
 	;; get off the elevator
-	(send *ri* :speak-jp "すすみます" :wait t)
+	(send *ri* :speak-jp "前に進みます" :wait t)
 	(ros::service-call "/passthrough/stop" *pass-req* t)
 	(send *ri* :clear-costmap)
 	(send *ri* :go-pos 3.5 0 0)
