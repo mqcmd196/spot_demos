@@ -1,0 +1,8 @@
+map to 2f entrance
+[-6.734, -32.141, 0.000]
+
+map to 2f elevator hall
+[2.050, -29.899, 0.000]
+
+map to 2f elevator hall 2
+[2.145, -27.902, -0.000]
