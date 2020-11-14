@@ -1,6 +1,15 @@
+#!/usr/env/bin roseus
+;; load necessary requirements
 (require :fetch-interface "package://fetcheus/fetch-interface.l")
 (load "package://jsk_maps/src/change-floor.l")
 (load "package://jsk_fetch_startup/euslisp/navigation-utils.l")
+(load "speech-recognition-service.l")
+
+;; for passthrough service
+(ros::roseus "passthrough")
+(ros::wait-for-service "/passthrough/request")
+(ros::wait-for-service "/passthrough/stop")
+(setq *pass-req* (instance std_srvs::EmptyRequest :init))
 
 (defun get-on-and-off-eng2-elevator(start-floor goal-floor)
   ;; Please use this function 2.0m before the elevator door.
