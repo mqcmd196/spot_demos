@@ -13,8 +13,8 @@
 (setq *pass-req* (instance std_srvs::EmptyRequest :init))
 
 ;; set global variables
-(setq *2f-elevator-hall-1* (make-coords :pos #f(2.050 -29.899 0.000) :rpy #f(0 0 0)))
-(setq *2f-elevator-hall-2* (make-coords :pos #f(2.145 -27.902 0.000) :rpy #f(0 0 0)))
+(setq *2f-elevator-hall-1* (make-coords :pos #f(2050 -29899 0.000) :rpy #f(-pi/2 0 0)))
+(setq *2f-elevator-hall-2* (make-coords :pos #f(2145 -27902 0.000) :rpy #f(0 0 0)))
 (setq *3f-elevator-hall* (make-coords :pos #f(1837 -30734 -0) :rpy (float-vector -pi/2 0 0)))
 (setq *7f-elevator-hall* (make-coords :pos #f(1850 -30746 0) :rpy (float-vector -pi/2 0 0)))
 
