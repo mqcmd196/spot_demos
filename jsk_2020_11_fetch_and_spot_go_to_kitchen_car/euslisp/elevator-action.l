@@ -52,23 +52,28 @@
 	
 	;; get on the elevator
 	(send *ri* :speak-jp "前に進みます" :wait t)
-	(send *ri* :clear-costmap)
-	(send *ri* :go-pos 3.0 0 180)
-	(unix:sleep 1)
-	(send *ri* :speak-jp "エレベータに乗りました" :wait t)
+        (let ((local-inflation-radius (ros::get-param "/move_base/local_costmap/inflater/inflation_radius"))
+	      (global-inflation-radius (ros::get-param "/move_base/global_costmap/inflater/inflation_radius")))
+	  (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double 0.3)
+	  (ros::set-dynamic-reconfigure-param "/move_base/global_costmap/inflater" "inflation_radius" :double 0.3)
+	  (send *ri* :clear-costmap)
+	  (send *ri* :go-pos 3.0 0 180)
+	  (unix:sleep 1)
+	  (send *ri* :speak-jp "エレベータに乗りました" :wait t)
+	  ;; request pushing the button
+	  (send *ri* :speak-jp (concatenate string "エレベータの" (string goal-floor) "階のボタンを押してください") :wait t)
+	  (change-floor (concatenate string "/eng2/" (string goal-floor) "f") :base-frame-name "/base_link")
+	  (send *ri* :speak-jp (concatenate string "マップを" (string goal-floor) "階に切り替えました") :wait t)
+	  (send *ri* :speak-jp "エレベータがついたら進んでと言ってください" :wait t)
+	  (wait-for-julius-trigger "すすんで")
 
-	;; request pushing the button
-	(send *ri* :speak-jp (concatenate string "エレベータの" (string goal-floor) "階のボタンを押してください") :wait t)
-	(change-floor (concatenate string "/eng2/" (string goal-floor) "f") :base-frame-name "/base_link")
-	(send *ri* :speak-jp (concatenate string "マップを" (string goal-floor) "階に切り替えました") :wait t)
-	(send *ri* :speak-jp "エレベータがついたら進んでと言ってください" :wait t)
-	(wait-for-julius-trigger "すすんで")
-
-	;; get off the elevator
-	(send *ri* :speak-jp "前に進みます" :wait t)
-	(ros::service-call "/passthrough/stop" *pass-req* t)
-	(send *ri* :clear-costmap)
-	(send *ri* :go-pos 3.5 0 0)
-	(unix:sleep 1)
-	(send *ri* :speak-jp "エレベータからおりました" :wait t))
-  )
+	  ;; get off the elevator
+	  (send *ri* :speak-jp "前に進みます" :wait t)
+	  (ros::service-call "/passthrough/stop" *pass-req* t)
+	  (send *ri* :clear-costmap)
+	  (send *ri* :go-pos 3.5 0 0)
+	  (unix:sleep 1)
+	  (send *ri* :speak-jp "エレベータからおりました" :wait t)
+	  (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double local-inflation-radius)
+	  (ros::set-dynamic-reconfigure-param "/move_base/global_costmap/inflater" "inflation_radius" :double global-inflation-radius))
+  ))
