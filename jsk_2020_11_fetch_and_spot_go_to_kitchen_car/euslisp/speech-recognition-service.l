@@ -1,15 +1,24 @@
+#!/usr/env/bin roseus
 ;; for subscribing
 (ros::load-ros-manifest "std_msgs")
 (ros::load-ros-manifest "speech_recognition_msgs")
+
 ;; for (listen-with-google)
 (ros::roseus "speech_to_text")
 
+;; global variables
 (defvar *speech-recognition-topic* "/speech_to_text_mux/selected")
 (defvar *julius-msg* "/speech_to_text_julius")
 (defvar *google-msg* "/speech_to_text_google")
 (defvar *julius-service* "speech_recognition")
 
-(defvar *julius-words* (list "すすんで" "かえるよ"))
+(defvar *julius-words* (list "すすんで" "ありがとう"))
+
+;; passthrough service
+(ros::roseus "passthrough")
+(ros::wait-for-service "/passthrough/request")
+(ros::wait-for-service "/passthrough/stop")
+(setq *pass-req* (instance std_srvs::EmptyRequest :init))
 
 (defun julius-words-list(*julius-words*)
     (ros::ros-info (format nil "Julius words are ~A" *julius-words*))

@@ -3,6 +3,7 @@
 (require :fetch-interface "package://fetcheus/fetch-interface.l")
 (load "package://jsk_maps/src/change-floor.l")
 (load "package://jsk_fetch_startup/euslisp/navigation-utils.l")
+(load "utils.l")
 (load "speech-recognition-service.l")
 
 ;; passthrough service
@@ -11,9 +12,42 @@
 (ros::wait-for-service "/passthrough/stop")
 (setq *pass-req* (instance std_srvs::EmptyRequest :init))
 
+;; set global variables
+(setq *2f-elevator-hall-1* (make-coords :pos #f(2.050 -29.899 0.000) :rpy #f(0 0 0)) :frame-id "/map")
+(setq *2f-elevator-hall-2* (make-coords :pos #f(2.145 -27.902 0.000) :rpy #f(0 0 0)) :frame-id "/map")
+(setq *3f-elevator-hall* (make-coords :pos #f(1837 -30734 -0) :rpy (float-vector -pi/2 0 0)) :frame-id "/map")
+(setq *7f-elevator-hall* (make-coords :pos #f(10574 -27843 0) :rpy (float-vector -pi/2 0 0)) :frame-id "/map")
+
+(defun go-to-current-floor-elevator-hall()
+  (let (current-floor (get-current-floor))
+	(send *ri* :speak-jp (concatenate string (string current-floor) "階のエレベータホールに向かいます") :wait t)
+	(cond ((= current-floor "2")
+		   (send *ri* *2f-elevator-hall-1*)
+		   (unix:sleep 1))
+		  ((= current-floor "3")
+		   (send *ri* *3f-elevator-hall*)
+		   (unix:sleep 1))
+		  ((= current-floor "7")
+		   (send *ri* *7f-elevator-hall*)
+		   (unix:sleep 1))
+		  )
+	)
+  )
+
 (defun get-on-and-off-eng2-elevator(start-floor goal-floor)
-  ;; Please use this function 2.0m before the elevator door.
+  ;; Please use this function 2.0m~2.5m before the elevator door.
   (let ((building "/eng2/"))
+	;; speak which button to push
+	(cond ((= start-floor goal-floor)
+		   (send *ri* :speak-jp "入力された階が同じです" :wait t))
+		  ((> start-floor goal-floor)
+		   (send *ri* :speak-jp "エレベータの下ボタンを押してください" :wait t))
+		  ((< start-floor goal-floor)
+		   (send *ri* :speak-jp "エレベータの上ボタンを押してください" :wait t)))
+	
+	;; before getting on the elevator
+	(send *ri* :speak-jp "エレベータがついたらすすんでと言ってください" :wait t)
+	(wait-for-julius-trigger "すすんで")
 	
 	;; get on the elevator
 	(send *ri* :speak-jp "前に進みます" :wait t)
@@ -27,7 +61,6 @@
 	(change-floor (concatenate string "/eng2/" (string goal-floor) "f") :base-frame-name "/base_link")
 	(send *ri* :speak-jp (concatenate string "マップを" (string goal-floor) "階に切り替えました") :wait t)
 	(send *ri* :speak-jp "エレベータがついたら進んでと言ってください" :wait t)
-	(ros::service-call "/passthrough/request" *pass-req* t)
 	(wait-for-julius-trigger "すすんで")
 
 	;; get off the elevator
@@ -36,6 +69,5 @@
 	(send *ri* :clear-costmap)
 	(send *ri* :go-pos 3.5 0 0)
 	(unix:sleep 1)
-	(send *ri* :speak-jp "エレベータからおりました" :wait t)
-  )
+	(send *ri* :speak-jp "エレベータからおりました" :wait t))
   )
