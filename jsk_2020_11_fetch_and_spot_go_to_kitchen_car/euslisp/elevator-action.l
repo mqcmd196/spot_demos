@@ -3,8 +3,8 @@
 (require :fetch-interface "package://fetcheus/fetch-interface.l")
 (load "package://jsk_maps/src/change-floor.l")
 (load "package://jsk_fetch_startup/euslisp/navigation-utils.l")
-(load "utils.l")
-(load "speech-recognition-service.l")
+(load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/utils.l")
+(load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/speech-recognition-service.l")
 
 ;; passthrough service
 (ros::roseus "passthrough")
@@ -13,8 +13,8 @@
 (setq *pass-req* (instance std_srvs::EmptyRequest :init))
 
 ;; set global variables
-(setq *2f-elevator-hall-1* (make-coords :pos #f(2050 -29899 0.000) :rpy #f(-pi/2 0 0)))
-(setq *2f-elevator-hall-2* (make-coords :pos #f(2145 -27902 0.000) :rpy #f(0 0 0)))
+(setq *2f-elevator-hall-1* (make-coords :pos #f(2050 -29899 0.000) :rpy (float-vector -pi/2 0 0)))
+(setq *2f-elevator-hall-2* (make-coords :pos #f(2145 -27902 0.000) :rpy (float-vector 0 0 0)))
 (setq *3f-elevator-hall* (make-coords :pos #f(1837 -30734 -0) :rpy (float-vector -pi/2 0 0)))
 (setq *7f-elevator-hall* (make-coords :pos #f(1850 -30746 0) :rpy (float-vector -pi/2 0 0)))
 
