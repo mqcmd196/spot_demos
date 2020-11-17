@@ -13,8 +13,7 @@
 (ros::wait-for-service "/passthrough/stop")
 (setq *pass-req* (instance std_srvs::EmptyRequest :init))
 
-;; define movement
-    
+;; define movements 
 (defun go-to-auto-door1()
     (send *ri* :clear-costmap)
     (send *ri* :speak-jp "ひとつめの自動ドアにむかいます" :wait t)
@@ -67,26 +66,3 @@
   (wait-for-julius-trigger "すすんで")
   (go-to-current-floor-elevator-hall)
   )
-
-;; (defun go-to-front-of-auto-door1()
-;;     (send *ri* :move-to (make-coords :pos #f(50000 -31276 0) :rpy (float-vector 0 0 0)) :frame-id "/map")
-;;     )
-
-;; (defun go-to-front-of-auto-door2())
-    
-
-
-;; jimusitu kyoin
-;; (send *ri* :move-to (make-coords :pos #f(50000 -31276 0) :rpy (float-vector 0 0 0)) :frame-id "/map")
-
-;; jimusitu gakusei
-;; (send *ri* :move-to (make-coords :pos #f(50000 -26576 0) :rpy (float-vector 0 0 0)) :frame-id "/map")
-
-;; elevator hall
-;; (send *ri* :move-to (make-coords :pos #f(1850 -30746 0) :rpy (float-vector -pi/2 0 0)) :frame-id "/map")
-
-
-;; memo
-;; imu
-;; julius 10 -> 2
-;; no rotation move_base
