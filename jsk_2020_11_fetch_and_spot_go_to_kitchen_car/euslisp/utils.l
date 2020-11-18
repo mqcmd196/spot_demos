@@ -1,7 +1,14 @@
 #!/usr/env/bin roseus
 (require :fetch-interface "package://fetcheus/fetch-interface.l")
+
 ;; for get-current-floor function
 (ros::load-ros-manifest "std_msgs")
+
+;; global variables 
+(setq *default-local-inflation-radius* (ros::get-param "/move_base/local_costmap/inflater/inflation_radius"))
+(setq *default-global-inflation-radius* (ros::get-param "/move_base/global_costmap/inflater/inflation_radius"))
+(setq *default-max-vel-x* (ros::get-param "/move_base/TrajectoryPlannerROS/max_vel_x"))
+(setq *default-min-vel-x* (ros::get-param "/move_base/TrajectoryPlannerROS/min_vel_x"))
 
 (defun get-current-floor()
   (let (msg floor)
@@ -10,4 +17,13 @@
 	(setq floor (string-right-trim "f_tf" (string-left-trim "/eng2/" (send msg :data))))
 	(read-from-string floor)
 	)
+  )
+
+(defun change-dynamic-param(&optional (local-inflation-radius *default-local-inflation-radius*) (global-inflation-radius *default-global-inflation-radius*) (max-vel-x *default-max-vel-x*) (min-vel-x *default-min-vel-x*))
+  (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double local-inflation-radius)
+  (ros::set-dynamic-reconfigure-param "/move_base/global_costmap/inflater" "inflation_radius" :double global-inflation-radius)
+  (ros::set-dynamic-reconfigure-param "/move_base/TrajectoryPlannerROS" "max_vel_x" :double max-vel-x)
+  (ros::set-dynamic-reconfigure-param "/move_base/TrajectoryPlannerROS" "min_vel_x" :double min-vel-x)
+  (unix:sleep 1)
+  (send *ri* :clear-costmap)
   )
