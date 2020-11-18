@@ -15,7 +15,7 @@
 (defun go-to-current-floor-elevator-hall()
   (let ((current-floor (get-current-floor)))
 	(send *ri* :speak-jp (concatenate string (string current-floor) "階のエレベータホールに向かいます") :wait t)
-	(print current-floor)
+	(ros::ros-info "current floor is ~d" current-floor)
 	(cond ((= current-floor 2)
 		   (send *ri* :move-to *2f-elevator-hall-1* :frame-id "/map")
 		   (unix:sleep 1))
@@ -33,6 +33,7 @@
   ;; Please use this function 2.0m~2.5m before the elevator door.
   (let ((building "/eng2/"))
 	;; speak which button to push
+	(ros::ros-info "start floor:~d goal-floor:~d" start-floor goal-floor)
 	(cond ((= start-floor goal-floor)
 		   (send *ri* :speak-jp "入力された階が同じです" :wait t))
 		  ((> start-floor goal-floor)
