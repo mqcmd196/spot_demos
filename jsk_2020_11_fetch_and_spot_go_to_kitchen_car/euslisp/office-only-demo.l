@@ -14,33 +14,26 @@
 (setq *3f-auto-door-3* (make-coords :pos #f(22627 -32752 0) :rpy (float-vector pi 0 0)))
 (setq *3f-auto-door-4* (make-coords :pos #f(12574 -27843 0) :rpy (float-vector pi 0 0)))
 
-;; initialization
-(fetch-init)
-
 ;; define movements
-(defun go-to-3f-auto-door(floor)
+(defun go-to-3f-auto-door(door)
   (send *ri* :clear-costmap)
-  (send *ri* :speak-jp (concatenate string (string floor) "番目の自動ドアに向かいます") :wait t)  
-  ;; when going autodoor 2 and 4
-  ;; global-inflater-rad 0.7 -> 0.3
-  ;; local-inflater-rad 0.7 -> 0.3
-  ;; max-vel-x 0.5 -> 0.6
-  ;; min-vel-x 0.1 -> 0.3
-  (cond ((= floor 1)
+  (send *ri* :speak-jp (concatenate string (string door) "番目の自動ドアに向かいます") :wait t)
+  (cond ((= door 1)
 		 (send *ri* :move-to *3f-auto-door-1* :frame-id "/map"))
-		((= floor 2)
+		((= door 2)
 		 (change-dynamic-param 0.3 0.3)
 		 (send *ri* :move-to *3f-auto-door-2* :frame-id "/map")
 		 (change-dynamic-param))
-		((= floor 3)
+		((= door 3)
 		 (send *ri* :move-to *3f-auto-door-3* :frame-id "/map"))
-		((= floor 4)
+		((= door 4)
 		 (change-dynamic-param 0.3 0.3)
 		 (send *ri* :move-to *3f-auto-door-4* :frame-id "/map")
 		 (change-dynamic-param)))
   )
 
 (defun go-through-3f-auto-door()
+  (send *ri* :speak-jp "一気に進みます" :wait t)
   (change-dynamic-param 0.3 0.3 0.6 0.3)
   (send *ri* :go-pos 2 0 0)
   (change-dynamic-param)
@@ -53,6 +46,8 @@
   )
 
 (defun office-only-demo()
+  (unless (boundp '*ri*) (fetch-init))
+  
   (undock)
   (go-to-current-floor-elevator-hall)
   (get-on-and-off-eng2-elevator (get-current-floor) 3)
