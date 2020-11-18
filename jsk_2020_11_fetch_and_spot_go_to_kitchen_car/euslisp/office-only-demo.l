@@ -14,6 +14,9 @@
 (setq *3f-auto-door-3* (make-coords :pos #f(22627 -32752 0) :rpy (float-vector pi 0 0)))
 (setq *3f-auto-door-4* (make-coords :pos #f(12574 -27843 0) :rpy (float-vector pi 0 0)))
 
+;; initialization
+(fetch-init)
+
 ;; define movements
 (defun go-to-3f-auto-door(floor)
   (send *ri* :clear-costmap)
