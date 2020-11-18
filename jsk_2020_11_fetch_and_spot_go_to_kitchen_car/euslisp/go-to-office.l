@@ -71,5 +71,4 @@
   (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
   (wait-for-julius-trigger "すすんで")
   (go-through-3f-auto-door)
-  (go-to-current-floor-elevator-hall)
   )
