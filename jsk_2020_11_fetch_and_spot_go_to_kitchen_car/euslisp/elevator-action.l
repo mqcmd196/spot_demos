@@ -6,12 +6,6 @@
 (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/utils.l")
 (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/speech-recognition-service.l")
 
-;; passthrough service
-(ros::roseus "passthrough")
-(ros::wait-for-service "/passthrough/request")
-(ros::wait-for-service "/passthrough/stop")
-(setq *pass-req* (instance std_srvs::EmptyRequest :init))
-
 ;; set global variables
 (setq *2f-elevator-hall-1* (make-coords :pos #f(2050 -29899 0.000) :rpy (float-vector -pi/2 0 0)))
 (setq *2f-elevator-hall-2* (make-coords :pos #f(2145 -27902 0.000) :rpy (float-vector 0 0 0)))
@@ -66,10 +60,8 @@
 	  (send *ri* :speak-jp (concatenate string "マップを" (string goal-floor) "階に切り替えました") :wait t)
 	  (send *ri* :speak-jp "エレベータがついたら進んでと言ってください" :wait t)
 	  (wait-for-julius-trigger "すすんで")
-
 	  ;; get off the elevator
 	  (send *ri* :speak-jp "前に進みます" :wait t)
-	  (ros::service-call "/passthrough/stop" *pass-req* t)
 	  (send *ri* :clear-costmap)
 	  (send *ri* :go-pos 3.5 0 0)
 	  (unix:sleep 1)
