@@ -11,7 +11,7 @@
 (defun go-to-73b2()
   (unless (boundp '*ri*) (fetch-init))
   
-  (send *ri* :speak-jp "ドックに戻ります" :wait t)
+  (send *ri* :speak-jp "研究室にに戻ります" :wait t)
   (go-to-current-floor-elevator-hall)
   (get-on-and-off-eng2-elevator (get-current-floor) 7)
   (auto-dock)
