@@ -21,7 +21,7 @@
   (cond ((= door 1)
 		 (send *ri* :move-to *3f-auto-door-1* :frame-id "/map"))
 		((= door 2)
-		 (change-dynamic-param :local-inflation-radius 0.3 :global-inlation-radius 0.3)
+		 (change-dynamic-param :local-inflation-radius 0.3 :global-inflation-radius 0.3)
 		 (send *ri* :move-to *3f-auto-door-2* :frame-id "/map")
 		 (change-dynamic-param))
 		((= door 3)
