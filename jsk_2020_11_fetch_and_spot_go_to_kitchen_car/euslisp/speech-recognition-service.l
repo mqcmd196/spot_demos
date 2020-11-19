@@ -14,12 +14,6 @@
 
 (defvar *julius-words* (list "すすんで" "ありがとう"))
 
-;; passthrough service
-(ros::roseus "passthrough")
-(ros::wait-for-service "/passthrough/request")
-(ros::wait-for-service "/passthrough/stop")
-(setq *pass-req* (instance std_srvs::EmptyRequest :init))
-
 (defun julius-words-list(*julius-words*)
     (ros::ros-info (format nil "Julius words are ~A" *julius-words*))
 )

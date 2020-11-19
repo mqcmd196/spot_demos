@@ -41,6 +41,7 @@
 		  ((< start-floor goal-floor)
 		   (send *ri* :speak-jp "エレベータの上ボタンを押してください" :wait t)))
 	
+	(send *ri* :speak-jp (concatenate string (string goal-floor) "階のボタンを押してください") :wait t)
 	;; before getting on the elevator
 	(send *ri* :speak-jp "エレベータがついたらすすんでと言ってください" :wait t)
 	(wait-for-julius-trigger "すすんで")
