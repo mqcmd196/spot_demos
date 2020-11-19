@@ -5,45 +5,10 @@
 (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/elevator-action.l")
 (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/utils.l")
 
+(load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/go-to-office.l")
+
 (ros::load-ros-manifest "geometry_msgs")
 (ros::advertise "/initialpose" geometry_msgs::PoseWithCovarianceStamped 1)
-
-;; auto-door-coords
-(setq *3f-auto-door-1* (make-coords :pos #f(10574 -27843 0) :rpy (float-vector 0 0 0)))
-(setq *3f-auto-door-2* (make-coords :pos #f(20627 -32752 0) :rpy (float-vector 0 0 0)))
-(setq *3f-auto-door-3* (make-coords :pos #f(22627 -32752 0) :rpy (float-vector pi 0 0)))
-(setq *3f-auto-door-4* (make-coords :pos #f(12574 -27843 0) :rpy (float-vector pi 0 0)))
-
-;; define movements
-(defun go-to-3f-auto-door(door)
-  (send *ri* :clear-costmap)
-  (send *ri* :speak-jp (concatenate string (string door) "番目の自動ドアに向かいます") :wait t)
-  (cond ((= door 1)
-		 (send *ri* :move-to *3f-auto-door-1* :frame-id "/map"))
-		((= door 2)
-		 (change-dynamic-param :local-inflation-radius 0.3 :global-inflation-radius 0.3)
-		 (send *ri* :move-to *3f-auto-door-2* :frame-id "/map")
-		 (change-dynamic-param))
-		((= door 3)
-		 (send *ri* :move-to *3f-auto-door-3* :frame-id "/map"))
-		((= door 4)
-		 (change-dynamic-param :local-inflation-radius 0.3 :global-inflation-radius 0.3)
-		 (send *ri* :move-to *3f-auto-door-4* :frame-id "/map")
-		 (change-dynamic-param)))
-  )
-
-(defun go-through-3f-auto-door()
-  (send *ri* :speak-jp "一気に進みます" :wait t)
-  (change-dynamic-param :local-inflation-radius 0.3 :global-inflation-radius 0.3 :max-vel-x 0.6 :min-vel-x 0.3 :clearing-rotation t)
-  (send *ri* :go-pos 2 0 0)
-  (change-dynamic-param)
-  )
-
-(defun go-to-office-kyoin()
-  (send *ri* :clear-costmap)
-  (send *ri* :speak-jp "事務室にむかいます" :wait t)
-  (send *ri* :move-to (make-coords :pos #f(51100 -29876 0) :rpy (float-vector 0 0 0)) :frame-id "/map")
-  )
 
 (defun office-only-demo()
   (unless (boundp '*ri*) (fetch-init))
