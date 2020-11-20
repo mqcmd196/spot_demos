@@ -10,7 +10,7 @@
 
 ;; auto-door-coords
 (setq *3f-auto-door-1* (make-coords :pos #f(10574 -28000 0) :rpy (float-vector 0 0 0)))
-(setq *3f-auto-door-2* (make-coords :pos #f(20627 -32680 0) :rpy (float-vector 0 0 0)))
+(setq *3f-auto-door-2* (make-coords :pos #f(20473 -32738 0) :rpy (float-vector 0 0 0)))
 (setq *3f-auto-door-3* (make-coords :pos #f(22627 -32752 0) :rpy (float-vector pi 0 0)))
 (setq *3f-auto-door-4* (make-coords :pos #f(12574 -28000 0) :rpy (float-vector pi 0 0)))
 
@@ -35,7 +35,7 @@
 (defun go-through-3f-auto-door()
   (send *ri* :speak-jp "一気に進みます" :wait t)
   (change-dynamic-param :local-inflation-radius 0.3 :global-inflation-radius 0.3 :max-vel-x 0.6 :min-vel-x 0.3)
-  (send *ri* :go-pos 2 0 0)
+  (send *ri* :go-pos 2.5 0 0)
   (change-dynamic-param)
   )
 
