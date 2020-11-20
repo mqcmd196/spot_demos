@@ -9,10 +9,10 @@
 (ros::advertise "/initialpose" geometry_msgs::PoseWithCovarianceStamped 1)
 
 ;; auto-door-coords
-(setq *3f-auto-door-1* (make-coords :pos #f(10574 -27843 0) :rpy (float-vector 0 0 0)))
-(setq *3f-auto-door-2* (make-coords :pos #f(20627 -32752 0) :rpy (float-vector 0 0 0)))
+(setq *3f-auto-door-1* (make-coords :pos #f(10574 -28000 0) :rpy (float-vector 0 0 0)))
+(setq *3f-auto-door-2* (make-coords :pos #f(20627 -32680 0) :rpy (float-vector 0 0 0)))
 (setq *3f-auto-door-3* (make-coords :pos #f(22627 -32752 0) :rpy (float-vector pi 0 0)))
-(setq *3f-auto-door-4* (make-coords :pos #f(12574 -27843 0) :rpy (float-vector pi 0 0)))
+(setq *3f-auto-door-4* (make-coords :pos #f(12574 -28000 0) :rpy (float-vector pi 0 0)))
 
 ;; define movements
 (defun go-to-3f-auto-door(door)
@@ -60,9 +60,9 @@
   (go-through-3f-auto-door)
   (go-to-office-kyoin)
   (send *ri* :speak-jp "届け物をしにきました" :wait t)
-  (send *ri* :speak-jp "受け取ったら，ありがとうと言ってください" :wait t)
-  (wait-for-julius-trigger "ありがとう")
-  (send *ri* :speak-jp "どういたしまして" :wait t)
+  (send *ri* :speak-jp "受け取ったら，受け取りましたと言ってください" :wait t)
+  (wait-for-julius-trigger "うけとりました")
+  (send *ri* :speak-jp "戻ります" :wait t)
   (go-to-3f-auto-door 3)
   (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
   (wait-for-julius-trigger "すすんで")

@@ -32,7 +32,7 @@
 
 (defun listen-with-google()
     (let
-        ((res (one-shot-subscribe *google-msg* speech_recognition_msgs::SpeechRecognitionCandidates)))
+        ((res (one-shot-subscribe *google-msg* speech_recognition_msgs::SpeechRecognitionCandidates)) )
         (ros::ros-info (format nil "SpeechRecognition::Google :transcript ~A" (car (send res :transcript))))
         (car (send res :transcript))
     )
