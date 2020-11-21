@@ -1,6 +1,6 @@
 #!/usr/env/bin roseus
 (require :fetch-interface "package://fetcheus/fetch-interface.l")
-(load "speech-recognition-service.l")
+(unless (boundp '*speech-recognition-service*) (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/speech-recognition-service.l"))
 
 (defun define-mission()
   (let (google-strings missions)

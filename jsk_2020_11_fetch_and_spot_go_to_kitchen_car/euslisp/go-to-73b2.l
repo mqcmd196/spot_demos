@@ -2,8 +2,10 @@
 (require :fetch-interface "package://fetcheus/fetch-interface.l")
 (load "package://jsk_maps/src/change-floor.l")
 (load "package://jsk_fetch_startup/euslisp/navigation-utils.l")
-(load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/elevator-action.l")
-(load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/utils.l")
+(unless boundp '*elevator-action* (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/elevator-action.l"))
+(unless boundp '*utils* (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/utils.l"))
+
+(setq *go-to-73b2* t)
 
 (ros::load-ros-manifest "geometry_msgs")
 (ros::advertise "/initialpose" geometry_msgs::PoseWithCovarianceStamped 1)

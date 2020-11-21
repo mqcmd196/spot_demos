@@ -1,12 +1,12 @@
 #!/usr/env/bin roseus
 (require :fetch-interface "package://fetcheus/fetch-interface.l")
 
-(load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/define-mission.l")
-(load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/go-to-office.l")
-(load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/go-to-2f-hall.l")
-(load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/pass-mission-from-fetch-to-spot.l")
-(load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/get-lunch-box.l")
-(load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/go-to-73b2.l")
+(unless (boundp '*define-mission*) (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/define-mission.l"))
+(unless (boundp '*go-to-office*) (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/go-to-office.l"))
+(unless (boundp '*go-to-2f-hall*) (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/go-to-2f-hall.l"))
+(unless (boundp '*pass-mission-from-fetch-to-spot*) (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/pass-mission-from-fetch-to-spot.l"))
+(unless (boundp '*get-lunch-box*) (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/get-lunch-box.l"))
+(unless (boundp '*go-to-73b2*) (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/go-to-73b2.l"))
 
 (setq *demo* t)
 

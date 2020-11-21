@@ -4,7 +4,6 @@
 (load "package://jsk_fetch_startup/euslisp/navigation-utils.l")
 (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/elevator-action.l")
 (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/utils.l")
-
 (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/go-to-office.l")
 
 (ros::load-ros-manifest "geometry_msgs")

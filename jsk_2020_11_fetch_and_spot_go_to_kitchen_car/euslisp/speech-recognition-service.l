@@ -1,4 +1,5 @@
 #!/usr/env/bin roseus
+(setq *speech-recognition-service* t)
 ;; for subscribing
 (ros::load-ros-manifest "std_msgs")
 (ros::load-ros-manifest "speech_recognition_msgs")

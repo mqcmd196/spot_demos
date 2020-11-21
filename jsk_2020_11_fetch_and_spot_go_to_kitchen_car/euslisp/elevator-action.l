@@ -3,8 +3,10 @@
 (require :fetch-interface "package://fetcheus/fetch-interface.l")
 (load "package://jsk_maps/src/change-floor.l")
 (load "package://jsk_fetch_startup/euslisp/navigation-utils.l")
-(load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/utils.l")
-(load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/speech-recognition-service.l")
+(unless boundp '*speech-recognition-service* (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/speech-recognition-service.l"))
+(unless boundp '*utils* (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/utils.l"))
+
+(setq *elevator-action* t)
 
 ;; set global variables
 (setq *2f-elevator-hall-1* (make-coords :pos #f(2050 -29899 0.000) :rpy (float-vector -pi/2 0 0)))
