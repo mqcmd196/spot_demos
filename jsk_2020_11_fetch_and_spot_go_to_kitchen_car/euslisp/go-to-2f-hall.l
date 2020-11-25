@@ -11,7 +11,7 @@
 (ros::advertise "/initialpose" geometry_msgs::PoseWithCovarianceStamped 1)
 
 ;; global variable
-(setq *2f-elevator-hall-2* (make-coords :pos #f(2145 -27902 0.000) :rpy (float-vector 0 0 0)))
+(setq *2f-elevator-hall-2* (make-coords :pos #f(2145 -27902 0.000) :rpy (float-vector pi/2 0 0)))
 
 (unless (boundp '*ri*) (fetch-init))
 
