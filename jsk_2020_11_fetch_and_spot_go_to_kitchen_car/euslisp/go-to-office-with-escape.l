@@ -20,8 +20,12 @@
   (send *ri* :speak-jp "一気に進みます" :wait t)
   (change-dynamic-param :local-inflation-radius 0.3 :global-inflation-radius 0.3 :max-vel-x 0.6 :min-vel-x 0.3)
   (unless (send *ri* :go-pos 2.5 0 0)
-    (let (current-position (send *ri* :state :worldcoords))
+    (let ((current-coords (send *ri* :state :worldcoords)) (current-angle) (current-pos) (target-pos))
+	  (setq current-angle (car (send current-coords :rotation-angle)))
+	  (setq current-pos (send current-coords :pos))
+	  ;; (setq target-pos ) set target pos
       ;; add condition
+	  
       (send *ri* :go-velocity 0 0 1.5))
     )
   (change-dynamic-param))
