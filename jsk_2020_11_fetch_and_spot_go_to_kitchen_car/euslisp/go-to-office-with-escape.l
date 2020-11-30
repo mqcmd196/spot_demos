@@ -7,6 +7,14 @@
 (setq *3f-auto-door-3-inv* (make-coords :pos #f(22627 -32752 0) :rpy (float-vector 0 0 0)))
 (setq *3f-auto-door-4-inv* (make-coords :pos #f(12574 -28000 0) :rpy (float-vector 0 0 0)))
 
+(defun get-target-theta-from-me (robot-worldcoords target-worldpos)
+  ;; robot-world-coords : the robot's world coords
+  ;; target-x, y : the target's world x,y coords
+  (let ((target-relative-pos))
+    (setq target-relative-pos (send robot-worldcoords :inverse-transform-vector target-worldpos))
+    (atan2 (elt target-relative-pos 1) (elt target-relative-pos 0))
+    ))
+
 (defun go-through-3f-auto-door-with-escape-by-voice()
   (send *ri* :speak-jp "一気に進みます" :wait t)
   (change-dynamic-param :local-inflation-radius 0.3 :global-inflation-radius 0.3 :max-vel-x 0.6 :min-vel-x 0.3)
@@ -21,42 +29,29 @@
   (change-dynamic-param :local-inflation-radius 0.3 :global-inflation-radius 0.3 :max-vel-x 0.6 :min-vel-x 0.3)
   (unless (send *ri* :go-pos 2.5 0 0)
     (send *ri* :go-velocity 0 0 1.5)
-    
-    (let
-        ((current-coords (send *ri* :state :worldcoords))
-         (current-world-roll)
-         (current-world-pos)
-         (target-world-pos)
-         (target-theta-from-map)
-         (target-theta-from-me))
-      (setq current-world-roll (car (send current-coords :rotation-angle)))
-      (setq current-world-pos (send current-coords :pos))
+    (let ((current-world-pos) (target-theta-from-me))
       ;; set target
       ;; For example, if you want to go through No.1 door, the target is door4-inv.
       (cond
         ((= door 1)
-         (setq target-world-pos *3f-auto-door-4-inv*)
-         (setq target-theta-from-me pi))
+         (setq target-world-pos *3f-auto-door-4-inv*))
         ((= door 2)
-         (setq target-world-pos *3f-auto-door-3-inv*)
-         (setq target-theta-from-me pi))
+         (setq target-world-pos *3f-auto-door-3-inv*))
         ((= door 3)
-         (setq target-world-pos *3f-auto-door-2-inv*)
-         (setq target-theta-from-me 0))
+         (setq target-world-pos *3f-auto-door-2-inv*))
         ((= door 4)
-         (setq target-world-pos *3f-auto-door-1-inv*)
-         (setq target-theta-from-me 0)))
-      ;; when you use critical angle 
-      ;; (setq target-angle-from-me )
-       
+         (setq target-world-pos *3f-auto-door-1-inv*)))
+      ;; rotating and escape. init
+      (setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send target-world-pos :pos)))
       ;; add condition
-      (while (> (abs (- current-world-roll target-theta-from-me)) delta)
+      (while (> (abs target-theta-from-me) delta)
         (cond
-          ((> (- current-world-roll target-theta-from-me) 0)
-           (send *ri* :go-velocity 0 0 -1.5)
-           (< (- current-world-roll target-theta-from-me) 0)
+          ((< target-theta-from-me 0) ;; the robot is looking at the left side of the target
+           (send *ri* :go-velocity 0 0 -1.5))
+          ((> target-theta-from-me 0) ;; the robot is looking at the right side of the target
            (send *ri* :go-velocity 0 0 1.5)))
-        (setq current-world-roll (car (send (send *ri* :state :worldcoords) :rotation-angle))))
-      (send *ri* :move-to target-pos))))
-      
-  (change-dynamic-param))))
+        (setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send *spot* :pos))))
+        (send *ri* :move-to target-world-pos))
+      )
+  ;; set default move_base param
+  (change-dynamic-param))
