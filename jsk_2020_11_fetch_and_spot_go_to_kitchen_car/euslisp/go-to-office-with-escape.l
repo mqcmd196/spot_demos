@@ -28,8 +28,9 @@
   (send *ri* :speak-jp "一気に進みます" :wait t)
   (change-dynamic-param :local-inflation-radius 0.3 :global-inflation-radius 0.3 :max-vel-x 0.6 :min-vel-x 0.3)
   (unless (send *ri* :go-pos 2.5 0 0)
+    (ros::ros-info "recovery go-velocity")
     (send *ri* :go-velocity 0 0 1.5)
-    (let ((current-world-pos) (target-theta-from-me))
+    (let (current-world-pos target-theta-from-me)
       ;; set target
       ;; For example, if you want to go through No.1 door, the target is door4-inv.
       (cond
@@ -47,10 +48,13 @@
       (while (> (abs target-theta-from-me) delta)
         (cond
           ((< target-theta-from-me 0) ;; When the robot is looking at the left side of the target
-           (send *ri* :go-velocity 0 0 -1.5))
+	   (ros::ros-info "start recovery go-vel ~A" target-theta-from-me)
+           (send *ri* :go-velocity 0 0 target-theta-from-me))
           ((> target-theta-from-me 0) ;; When the robot is looking at the right side of the target
-           (send *ri* :go-velocity 0 0 1.5)))
-        (setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send target-world-pos :pos))))
+	   (ros::ros-info "start recovery go-vel ~A" target-theta-from-me 2)
+           (send *ri* :go-velocity 0 0 target-theta-from-me)))
+        (setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send target-world-pos :pos)))
+	(ros::ros-info "target-theta-from-me: ~A" target-theta-from-me))
         (send *ri* :move-to target-world-pos :frame-id "/map"))
       )
   ;; set default move_base param
