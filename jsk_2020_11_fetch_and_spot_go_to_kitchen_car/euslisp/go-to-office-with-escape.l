@@ -50,7 +50,7 @@
            (send *ri* :go-velocity 0 0 -1.5))
           ((> target-theta-from-me 0) ;; the robot is looking at the right side of the target
            (send *ri* :go-velocity 0 0 1.5)))
-        (setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send *spot* :pos))))
+        (setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send target-world-pos :pos))))
         (send *ri* :move-to target-world-pos))
       )
   ;; set default move_base param
