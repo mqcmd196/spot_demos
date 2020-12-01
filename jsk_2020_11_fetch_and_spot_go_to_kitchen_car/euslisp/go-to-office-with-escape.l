@@ -46,12 +46,41 @@
       ;; add condition
       (while (> (abs target-theta-from-me) delta)
         (cond
-          ((< target-theta-from-me 0) ;; the robot is looking at the left side of the target
+          ((< target-theta-from-me 0) ;; When the robot is looking at the left side of the target
            (send *ri* :go-velocity 0 0 -1.5))
-          ((> target-theta-from-me 0) ;; the robot is looking at the right side of the target
+          ((> target-theta-from-me 0) ;; When the robot is looking at the right side of the target
            (send *ri* :go-velocity 0 0 1.5)))
         (setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send target-world-pos :pos))))
-        (send *ri* :move-to target-world-pos))
+        (send *ri* :move-to target-world-pos :frame-id "/map"))
       )
   ;; set default move_base param
   (change-dynamic-param))
+
+(defun go-to-office-with-escape-by-rotate()
+  (unless (boundp '*ri*) (fetch-init))
+
+  ;; comment out for the experiment
+  ;; (go-to-current-floor-elevator-hall)
+  ;; (get-on-and-off-eng2-elevator (get-current-floor) 3)
+  (go-to-3f-auto-door 1)
+  (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
+  (wait-for-julius-trigger "すすんで")
+  (go-through-3f-auto-door-with-escape-by-rotate 1 0.2)
+  (go-to-3f-auto-door 2)
+  (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
+  (wait-for-julius-trigger "すすんで")
+  (go-through-3f-auto-door-with-escape-by-rotate 2 0.2)
+  (go-to-office-kyoin)
+  (send *ri* :speak-jp "届け物をしにきました" :wait t)
+  (send *ri* :speak-jp "受け取ったら，受け取りましたと言ってください" :wait t)
+  (wait-for-julius-trigger "うけとりました")
+  (send *ri* :speak-jp "戻ります" :wait t)
+  (go-to-3f-auto-door 3)
+  (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
+  (wait-for-julius-trigger "すすんで")
+  (go-through-3f-auto-door-with-escape-by-rotate 3 0.2)
+  (go-to-3f-auto-door 4)
+  (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
+  (wait-for-julius-trigger "すすんで")
+  (go-through-3f-auto-door-with-escape-by-rotate 4 0.2)
+  )
