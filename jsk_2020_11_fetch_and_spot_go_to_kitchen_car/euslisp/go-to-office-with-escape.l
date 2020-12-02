@@ -1,11 +1,13 @@
 #!/usr/env/bin roseus
 (unless (boundp '*go-to-office*) (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/go-to-office.l"))
+(setq *go-to-office-with-escape* t)
 
 ;; inv auto-door-coords
 (setq *3f-auto-door-1-inv* (make-coords :pos #f(10574 -28000 0) :rpy (float-vector pi 0 0)))
 (setq *3f-auto-door-2-inv* (make-coords :pos #f(20473 -32738 0) :rpy (float-vector pi 0 0)))
 (setq *3f-auto-door-3-inv* (make-coords :pos #f(22627 -32752 0) :rpy (float-vector 0 0 0)))
 (setq *3f-auto-door-4-inv* (make-coords :pos #f(12574 -28000 0) :rpy (float-vector 0 0 0)))
+
 
 (defun get-target-theta-from-me (robot-worldcoords target-worldpos)
   ;; robot-world-coords : the robot's world coords
@@ -15,24 +17,50 @@
     (atan2 (elt target-relative-pos 1) (elt target-relative-pos 0))
     ))
 
+
 (defun escape-by-rotate (target-world-pos delta-th)
   (ros::ros-info "recovery go-velocity")
   (send *ri* :go-velocity 0 0 1.5)
   (let (current-world-pos target-theta-from-me)
-	;; rotating and escape. init
-	(setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send target-world-pos :pos)))
-	;; add condition
-	(while (> (abs target-theta-from-me) delta-th)
-	  (cond
-		((< target-theta-from-me 0) ;; When the robot is looking at the left side of the target
-		 (ros::ros-info "start recovery go-vel ~A" target-theta-from-me)
-		 (send *ri* :go-velocity 0 0 target-theta-from-me))
-		((> target-theta-from-me 0) ;; When the robot is looking at the right side of the target
-		 (ros::ros-info "start recovery go-vel ~A" target-theta-from-me 2)
-		 (send *ri* :go-velocity 0 0 target-theta-from-me)))
-	  (setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send target-world-pos :pos)))
-	  (ros::ros-info "target-theta-from-me: ~A" target-theta-from-me))
-	(send *ri* :move-to target-world-pos :frame-id "/map")))
+    ;; rotating and escape. init
+    (setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send target-world-pos :pos)))
+    ;; add condition
+    (while (> (abs target-theta-from-me) delta-th)
+      (cond
+        ((< target-theta-from-me 0) ;; When the robot is looking at the left side of the target
+         (ros::ros-info "start recovery go-vel ~A" target-theta-from-me)
+         (send *ri* :go-velocity 0 0 target-theta-from-me))
+        ((> target-theta-from-me 0) ;; When the robot is looking at the right side of the target
+         (ros::ros-info "start recovery go-vel ~A" target-theta-from-me 2)
+         (send *ri* :go-velocity 0 0 target-theta-from-me)))
+      (setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send target-world-pos :pos)))
+      (ros::ros-info "target-theta-from-me: ~A" target-theta-from-me))
+    (send *ri* :move-to target-world-pos :frame-id "/map")))
+
+
+(defun force-escape-by-rotate (target-world-pos delta-th vel times)
+  (ros::ros-info "force recovery by go-velocity")
+  (send *ri* :go-velocity 0 0 1.5)
+  (let (current-world-pos target-theta-from-me)
+    ;; rotating and escape. init
+    (setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send target-world-pos :pos)))
+    ;; add condition
+    (while (> (abs target-theta-from-me) delta-th)
+      (cond
+        ((< target-theta-from-me 0) ;; When the robot is looking at the left side of the target
+         (ros::ros-info "start recovery go-vel ~A" target-theta-from-me)
+         (send *ri* :go-velocity 0 0 target-theta-from-me))
+        ((> target-theta-from-me 0) ;; When the robot is looking at the right side of the target
+         (ros::ros-info "start recovery go-vel ~A" target-theta-from-me 2)
+         (send *ri* :go-velocity 0 0 target-theta-from-me)))
+      (setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send target-world-pos :pos)))
+      (ros::ros-info "target-theta-from-me: ~A" target-theta-from-me))
+    (ros::ros-warn "Caution! Go straight by force. vel:~Am/s times:~A" vel times)
+    (send *ri* :speak "Catution! Go straight by force." :wait t)
+    (dotimes (i times)
+      (send *ri* :go-velocity vel 0 0))
+    ))
+
 
 (defun go-through-3f-auto-door-with-escape-by-voice()
   (send *ri* :speak-jp "一気に進みます" :wait t)
@@ -43,28 +71,30 @@
     (send *ri* :speak-jp "再開します" :wait t))
   (change-dynamic-param))
 
+
 (defun go-through-3f-auto-door-with-escape-by-rotate(door delta-th)
   (send *ri* :speak-jp "一気に進みます" :wait t)
   (change-dynamic-param :local-inflation-radius 0.3 :global-inflation-radius 0.3 :max-vel-x 0.6 :min-vel-x 0.3)
   (unless (send *ri* :go-pos 2.5 0 0)
       ;; set target
-      ;; For example, if you want to go through No.1 door, the target is door4-inv.
-	(cond
-	  ((= door 1)
-	   (setq target-world-pos *3f-auto-door-4-inv*))
-	  ((= door 2)
-	   (setq target-world-pos *3f-auto-door-3-inv*))
-	  ((= door 3)
-	   (setq target-world-pos *3f-auto-door-2-inv*))
-	  ((= door 4)
-	   (setq target-world-pos *3f-auto-door-1-inv*)))
-	(escape-by-rotate target-world-pos delta-th))
+    ;; For example, if you want to go through No.1 door, the target is door4-inv.
+    (let (target-worldpos)
+      (cond
+        ((= door 1)
+         (setq target-world-pos *3f-auto-door-4-inv*))
+        ((= door 2)
+         (setq target-world-pos *3f-auto-door-3-inv*))
+        ((= door 3)
+         (setq target-world-pos *3f-auto-door-2-inv*))
+        ((= door 4)
+         (setq target-world-pos *3f-auto-door-1-inv*)))
+      (escape-by-rotate target-world-pos delta-th)))
   ;; set default move_base param
   (change-dynamic-param))
 
+
 (defun go-to-office-with-escape-by-rotate()
   (unless (boundp '*ri*) (fetch-init))
-
   ;; comment out for the experiment
   ;; (go-to-current-floor-elevator-hall)
   ;; (get-on-and-off-eng2-elevator (get-current-floor) 3)
