@@ -34,6 +34,10 @@
 		 (change-dynamic-param)))
   )
 
+(defun shake-head()
+  (send *ri* :angle-vector)
+  )
+
 (defun go-through-3f-auto-door()
   (send *ri* :speak-jp "一気に進みます" :wait t)
   (change-dynamic-param :local-inflation-radius 0.3 :global-inflation-radius 0.3 :max-vel-x 0.6 :min-vel-x 0.3)
@@ -48,29 +52,40 @@
   )
 
 (defun go-to-office()
-  (unless (boundp '*ri*) (fetch-init))
-  
+  (unless (boundp '*ri*) (fetch-init))  
   (go-to-current-floor-elevator-hall)
   (get-on-and-off-eng2-elevator (get-current-floor) 3)
   (go-to-3f-auto-door 1)
+  ;; shake head
+  ;; auto-door switch off
   (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
   (wait-for-julius-trigger "すすんで")
   (go-through-3f-auto-door)
+  ;; auto-door switch on
+  ;; shake head
+  ;; auto-door switch off
   (go-to-3f-auto-door 2)
   (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
   (wait-for-julius-trigger "すすんで")
   (go-through-3f-auto-door)
+  ;; auto-door switch on
   (go-to-office-kyoin)
   (send *ri* :speak-jp "届け物をしにきました" :wait t)
   (send *ri* :speak-jp "受け取ったら，受け取りましたと言ってください" :wait t)
   (wait-for-julius-trigger "うけとりました")
   (send *ri* :speak-jp "戻ります" :wait t)
   (go-to-3f-auto-door 3)
+  ;; shake head
+  ;; auto-door switch off
   (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
   (wait-for-julius-trigger "すすんで")
   (go-through-3f-auto-door)
+  ;; switch on
+  ;; shake head
+  ;; auto-door switch off
   (go-to-3f-auto-door 4)
   (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
   (wait-for-julius-trigger "すすんで")
   (go-through-3f-auto-door)
+  ;; auto-door switch on
   )
