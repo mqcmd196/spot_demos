@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import urllib.request
+import time
 
 class SwitchBotAction:
     """
@@ -16,3 +17,9 @@ class SwitchBotAction:
         req = urllib.request.Request(self.url)
         with urllib.request.urlopen(req) as res:
             body = res.read()
+
+    def continuous_action(self, times, margin_sec):
+       # add the least margin_sec
+       for t in range(times):
+           self.action()
+           time.sleep(margin_sec)
