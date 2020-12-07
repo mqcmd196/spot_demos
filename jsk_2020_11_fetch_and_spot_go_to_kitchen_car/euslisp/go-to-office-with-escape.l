@@ -40,24 +40,27 @@
 
 (defun force-escape-by-rotate (target-world-pos delta-th vel times)
   (ros::ros-info "force recovery by go-velocity")
-  (send *ri* :go-velocity 0 0 1.5)
+  ;; (send *ri* :go-velocity 0 0 1.5)
   (let (current-world-pos target-theta-from-me)
     ;; rotating and escape. init
+    (unix:sleep 1)
     (setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send target-world-pos :pos)))
     ;; add condition
     (while (> (abs target-theta-from-me) delta-th)
       (cond
         ((< target-theta-from-me 0) ;; When the robot is looking at the left side of the target
          (ros::ros-info "start recovery go-vel ~A" target-theta-from-me)
-         (send *ri* :go-velocity 0 0 target-theta-from-me))
+         (send *ri* :go-velocity 0 0 (* 1 target-theta-from-me)))
         ((> target-theta-from-me 0) ;; When the robot is looking at the right side of the target
-         (ros::ros-info "start recovery go-vel ~A" target-theta-from-me 2)
-         (send *ri* :go-velocity 0 0 target-theta-from-me)))
+         (ros::ros-info "start recovery go-vel ~A" target-theta-from-me)
+         (send *ri* :go-velocity 0 0 (* 1 target-theta-from-me))))
+      (unix:sleep 1)
       (setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send target-world-pos :pos)))
       (ros::ros-info "target-theta-from-me: ~A" target-theta-from-me))
     (ros::ros-warn "Caution! Go straight by force. vel:~Am/s times:~A" vel times)
-    (send *ri* :speak "Catution! Go straight by force." :wait t)
+    (send *ri* :speak-jp "無理やり進みます" :wait t)
     (dotimes (i times)
+      (ros::ros-warn "go-velocity")
       (send *ri* :go-velocity vel 0 0))
     ))
 
