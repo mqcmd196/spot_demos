@@ -8,7 +8,6 @@ project(jsk_2020_11_fetch_and_spot_go_to_kitchen_car)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  message_generation
   )
 
 ## System dependencies are found with CMake's conventions
@@ -52,10 +51,9 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate services in the 'srv' folder
-add_service_files(
-  FILES
-  Command.srv
-)
+# add_service_files(
+#   FILES
+# )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -65,9 +63,9 @@ add_service_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-)
+# generate_messages(
+#   DEPENDENCIES
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package>
+  <name>switchbot_ros</name>
+  <version>0.0.0</version>
+  <description>use switchbot with ros</description>
+
+  <author email="mqcmd196@hotmail.co.jp">Yoshiki Obinata</author>
+  <maintainer email="mqcmd196@hotmail.co.jp">Yoshiki Obinata</maintainer>
+
+  <license>BSD</license>
+
+  <run_depend>spoteus</run_depend>
+
+  <export>
+  </export>
+</package>
