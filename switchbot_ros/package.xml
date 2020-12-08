@@ -9,7 +9,7 @@
 
   <license>BSD</license>
 
-  <run_depend>spoteus</run_depend>
+  <buildtool_depend>catkin</buildtool_depend>
 
   <export>
   </export>

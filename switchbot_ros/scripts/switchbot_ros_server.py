@@ -1,3 +1,18 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 import rospy
-from jsk_2020_11_fetch_and_spot_
+from switchbot_ros.srv import Command
+from switchbot_ros.srv import CommandResponse
+
+class SwitchBotServer:
+    """
+    Control your switchbot with IFTTT.
+    """
+    def __init__(self):
+        self.device_mac_address = 
+    
+
+if __name__ == '__main__':
+    rospy.init_node('switchbot_server')
+    app = SwitchBotServer()
+    rospy.spin()
+    
