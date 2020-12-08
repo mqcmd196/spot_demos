@@ -3,7 +3,7 @@
 
 ;; auto-door-coords at rails
 (setq *3f-auto-door-2-force* (make-coords :pos #f(21822.95 -32752.961 0) :rpy #f(0.116 0 0)))
-
+(setq *3f-auto-door-3-force* (make-coords :pos #f(21825.617 -32760.204 0) :rpy #f(3.04 0 0)))
 
 (defun force-go-through-auto-door (door)
   (send *ri* :speak-jp "無理やり進みます")
