@@ -98,7 +98,9 @@
     (send *ri* :speak-jp "無理やり進みます" :wait t)
     (dotimes (i times)
       (ros::ros-warn "go-velocity")
-      (send *ri* :go-velocity x-vel 0 0)))
+      (send *ri* :go-velocity x-vel 0 0))
+    (turn-to-the-target target-world-pos 0.7 0.1)
+    (send *ri* :go-velocity 0.2 0 0))
   (change-dynamic-param))
 
 (defun go-to-office-kyoin()
