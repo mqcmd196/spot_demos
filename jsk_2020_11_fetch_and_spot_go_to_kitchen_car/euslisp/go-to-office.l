@@ -57,7 +57,7 @@
 
 (defun turn-to-the-target(target-world-pos vel-rate delta-th)
   (let (current-world-pos target-theta-from-me)
-    ;; rotating and escape. init
+    ;; rotate and escape. init
     (unix:sleep 1)
     (setq target-theta-from-me (get-target-theta-from-me (send *ri* :state :worldcoords) (send target-world-pos :pos)))
     ;; add condition
@@ -91,7 +91,7 @@
        (setq target-world-pos *3f-auto-door-1-inv*)
        (setq via-world-pos *3f-auto-door-4-force*)))
     (ros::ros-info "go to via-world-pos")
-    (change-dynamic-param :local-inflation-radius 0.3 :global-inflation-radius 0.3 :max-vel-x 0.6 :min-vel-x 0.1) ;; original min-vel-x -> 0.3
+    (change-dynamic-param :local-inflation-radius 0.3 :global-inflation-radius 0.3) ;; original min-vel-x -> 0.3 max-vel-x -> 0.6. I think these are not needed.
     (send *ri* :move-to via-world-pos :frame-id "/map" :retry 1)
     (turn-to-the-target target-world-pos 1 0.21)
     (ros::ros-warn "Caution! Go straight by force. vel:~Am/s times:~A" x-vel times)
