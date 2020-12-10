@@ -12,7 +12,7 @@ class SwitchBotServer:
     Please setup your SwitchBot device as the README shows.
     """
     def __init__(self):
-        self._ifttt_key = rospy.get_param('ifttt_key')
+        self._ifttt_key = rospy.get_param('~ifttt_key')
         self.on_server = rospy.Service('~on', Command, self.on)
         self.off_server = rospy.Service('~off', Command, self.off)
         self.press_server = rospy.Service('~press', Command, self.press)
