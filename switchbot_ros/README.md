@@ -2,6 +2,8 @@
 
 ## usage
 
+First, add your webhooks key at `keys/key.txt`.
+
 To run service server,
 ```bash
 rosrun switchbot_ros switchbot_ros_server.py _ifttt_key:=YOUR_IFTTT_KEY
