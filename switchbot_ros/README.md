@@ -2,7 +2,11 @@
 
 ## usage
 
-First, add your webhooks key at `keys/key.txt`.
+First, add your webhooks key at `keys/ifttt.yaml` like this.
+```yaml
+switchbot_server:
+  ifttt_key: XXXXXXXXXXXXXXXX
+```
 
 To run service server,
 ```bash
