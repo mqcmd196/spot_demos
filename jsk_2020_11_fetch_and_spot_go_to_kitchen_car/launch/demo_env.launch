@@ -24,8 +24,8 @@
   </group>
 
   <!-- for using switchbot_ros -->
-  <node pkg="switchbot_ros" name="switchbot_ros_server" type="switchbot_ros_server.py" respawn="true" if="$(arg switchbot_ros)">
-    <rosparam command="load" file="$(find switchbot_ros)/keys/ifttt.yaml"/>
+  <rosparam command="load" file="$(find switchbot_ros)/keys/ifttt.yaml"/>
+  <node pkg="switchbot_ros" name="switchbot_server" type="switchbot_ros_server.py" respawn="true" if="$(arg switchbot_ros)">
   </node>
   
 </launch>
