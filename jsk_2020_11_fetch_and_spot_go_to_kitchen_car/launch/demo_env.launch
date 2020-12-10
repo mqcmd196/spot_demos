@@ -12,7 +12,7 @@
   <arg name="use_voice_text" default="false" />
 
   <!-- for light weight jsk_fetch_startup -->
-  <group if="$(fetch_bringup)">
+  <group if="$(arg fetch_bringup)">
     <include file="$(find jsk_fetch_startup)/launch/fetch_bringup.launch">
       <arg name="battery_warning" value="$(arg battery_warning)" />
       <arg name="nav_speak" value="$(arg nav_speak)" />
@@ -24,7 +24,7 @@
   </group>
 
   <!-- for using switchbot_ros -->
-  <node pkg="switchbot_ros" name="switchbot_ros_server" type="switchbot_ros_server.py" respawn="true" if="$(switchbot_ros)">
+  <node pkg="switchbot_ros" name="switchbot_ros_server" type="switchbot_ros_server.py" respawn="true" if="$(arg switchbot_ros)">
     <rosparam command="load" file="$(find switchbot_ros)/keys/ifttt.yaml"/>
   </node>
   
