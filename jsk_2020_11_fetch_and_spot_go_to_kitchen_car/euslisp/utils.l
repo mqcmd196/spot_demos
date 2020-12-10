@@ -6,6 +6,13 @@
 ;; for get-current-floor function
 (ros::load-ros-manifest "std_msgs")
 
+;; for switchbot ros
+(ros::roseus "switchbot_server")
+(ros::wait-for-service "switchbot_server/on")
+(ros::wait-for-service "switchbot_server/off")
+(ros::wait-for-service "switchbot_server/press")
+(ros::load-ros-manifest "switchbot_ros")
+
 ;; global variables 
 (setq *default-local-inflation-radius* (ros::get-param "/move_base/local_costmap/inflater/inflation_radius"))
 (setq *default-global-inflation-radius* (ros::get-param "/move_base/global_costmap/inflater/inflation_radius"))
@@ -17,9 +24,7 @@
   (let (msg floor)
 	(setq msg (one-shot-subscribe "/map_tf_mux/selected" std_msgs::String))
 	(setq floor (string-right-trim "f_tf" (subseq (send msg :data) 6)))
-	(read-from-string floor)
-	)
-  )
+	(read-from-string floor)))
 
 (defun change-dynamic-param(&key 
 			    (local-inflation-radius *default-local-inflation-radius*) 
@@ -34,5 +39,11 @@
   (ros::set-dynamic-reconfigure-param "/move_base/TrajectoryPlannerROS" "min_vel_x" :double min-vel-x)
   (ros::set-dynamic-reconfigure-param "/move_base" "clearing_rotation_allowed" :bool nil)
   (unix:sleep 1)
-  (send *ri* :clear-costmap)
-  )
+  (send *ri* :clear-costmap))
+
+(defun switchbot-action (nickname command)
+  (let
+      ((req (instance switchbot_ros::CommandRequest :init))
+       res)
+    (send req :nickname nickname)
+    (setq res (ros::service-call (concatenate string "switchbot_server/" command) req t))))
