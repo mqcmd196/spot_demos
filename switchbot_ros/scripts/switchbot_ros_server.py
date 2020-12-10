@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import time
 
 import rospy
@@ -13,45 +13,39 @@ class SwitchBotServer:
     """
     def __init__(self):
         self._ifttt_key = rospy.get_param('~ifttt_key')
-        self.nickname = rospy.get_param('~nickname', None)
         self.on_server = rospy.Service('~on', Command, self.on)
         self.off_server = rospy.Service('~off', Command, self.off)
         self.press_server = rospy.Service('~press', Command, self.press)
-
-    def _post_command(self, command):
-        event = self.nickname[1:].replace('/', '_') + '_' + command
-        key = self._ifttt_key
+        
+    def _post_command(self, data, command):
+        # define response
+        resp = CommandResponse()
         # send GET method
+        event = data.nickname[1:].replace('/', '_') + '_' + command
+        key = self._ifttt_key
         switchbot_request = SwitchBotRequest(event=event, key=key)
         switchbot_request.request()
         # check HTTP status
-        status = switchbot_request.status
-        msg = switchbot_request.msg
-        if status == 200:
-            successful = True
-            rospy.loginfo('Successfully send the GET to IFTTT server. status:{}, msg:{}'.format(switchbot_request.status, switchbot_request.msg)
+        resp.status = switchbot_request.status
+        resp.msg = switchbot_request.msg
+        if resp.status == 200:
+            resp.successful = True
+            rospy.loginfo('Successfully send the GET to IFTTT server. status:{}, msg:{}'.format(switchbot_request.status, switchbot_request.msg))
         else:
-            successful = False
-            rospy.logerr('IFTTT error! status:{}, msg:{}'.format(switchbot_request.status, switchbot_request.msg))
-        return successful, status, msg
+            resp.successful = False
+            rospy.logerr('IFTTT HTTP error! status:{}, msg:{}'.format(switchbot_request.status, switchbot_request.msg))
+        return resp
 
-    def on(self, req):
-        return CommandResponse(
-            *self._post_command('on')
-        )
+    def on(self, data):
+        return self._post_command(data, 'on')
 
-    def off(self, req):
-        return CommandResponse(
-            *self._post_command('off')
-        )
+    def off(self, data):
+        return self._post_command(data, 'off')
 
-    def press(self, req):
-        return CommandResponse(
-            *self._post_command('press')
-        )
+    def press(self, data):
+        return self._post_command(data, 'press')
 
 if __name__ == '__main__':
     rospy.init_node('switchbot_server')
     app = SwitchBotServer()
     rospy.spin()
-    

@@ -28,7 +28,7 @@ class SwitchBotRequest:
             print('Got HTTPError. status:{} msg:{}'.format(e.code, e.msg))
         except URLError as e:
             self._body = e
-            self.status = None
+            self.status = 0
             self.msg = self._body.reason
             print('Got URLError. reason:{}'.format(e.reason))
         
