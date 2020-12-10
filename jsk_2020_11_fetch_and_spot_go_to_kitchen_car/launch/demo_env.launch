@@ -1,4 +1,9 @@
 <launch>
+  <!-- main node -->
+  <arg name="fetch_bringup" default="true" />
+  <arg name="switchbot_ros" default="true" />
+
+  <!-- fetch_bringup options -->
   <arg name="battery_warning" default="false" />
   <arg name="nav_speak" default="false" />
   <arg name="fetch_tweet" default="false" />
@@ -7,17 +12,19 @@
   <arg name="use_voice_text" default="false" />
 
   <!-- for light weight jsk_fetch_startup -->
-  <include file="$(find jsk_fetch_startup)/launch/fetch_bringup.launch">
-    <arg name="battery_warning" value="$(arg battery_warning)" />
-    <arg name="nav_speak" value="$(arg nav_speak)" />
-    <arg name="fetch_tweet" value="$(arg fetch_tweet)" />
-    <arg name="fetch_sensors" value="$(arg fetch_sensors)" />
-    <arg name="use_safe_teleop" value="$(arg use_safe_teleop)" />
-    <arg name="use_voice_text" value="$(arg use_voice_text)" />
-  </include>
+  <group if="$(fetch_bringup)">
+    <include file="$(find jsk_fetch_startup)/launch/fetch_bringup.launch">
+      <arg name="battery_warning" value="$(arg battery_warning)" />
+      <arg name="nav_speak" value="$(arg nav_speak)" />
+      <arg name="fetch_tweet" value="$(arg fetch_tweet)" />
+      <arg name="fetch_sensors" value="$(arg fetch_sensors)" />
+      <arg name="use_safe_teleop" value="$(arg use_safe_teleop)" />
+      <arg name="use_voice_text" value="$(arg use_voice_text)" />
+    </include>
+  </group>
 
   <!-- for using switchbot_ros -->
-  <node pkg="switchbot_ros" name="switchbot_ros_server" type="switchbot_ros_server.py" respawn="true">
+  <node pkg="switchbot_ros" name="switchbot_ros_server" type="switchbot_ros_server.py" respawn="true" if="$(switchbot_ros)">
     <rosparam command="load" file="$(find switchbot_ros)/keys/ifttt.yaml"/>
   </node>
   
