@@ -44,9 +44,19 @@
 		 (change-dynamic-param)))
   )
 
-(defun move-torso()
-  (send *ri* :angle-vector)
-  )
+(defun move-torso(max min times msec)
+  (dotimes (i times)
+    (send *fetch* :torso_lift_joint :joint-angle max)
+    (send *ri* :angle-vector (send *fetch* :angle-vector) msec)
+    (unix:sleep (/ msec 1000))
+    (send *fetch* :torso_lift_joint :joint-angle min)
+    (send *ri* :angle-vector (send *fetch* :angle-vector) msec)
+    (unix:sleep (/ msec 1000))))
+
+(defun move-torso-and-autodoor-open(nickname)
+  (move-torso 120 40 2 3000)
+  (switchbot-action nickname "off")
+  (move-torso 120 40 2 2500))
 
 (defun go-through-3f-auto-door()
   (send *ri* :speak-jp "一気に進みます" :wait t)
@@ -114,36 +124,32 @@
   (go-to-current-floor-elevator-hall)
   (get-on-and-off-eng2-elevator (get-current-floor) 3)
   (go-to-3f-auto-door 1)
-  ;; shake head
-  ;; auto-door switch off
-  (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
-  (wait-for-julius-trigger "すすんで")
+  (move-torso-and-autodoor-open "/eng2/7f/new/autodoor/switch")
+  ;; (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
+  ;; (wait-for-julius-trigger "すすんで")
   (go-through-3f-auto-door)
-  ;; auto-door switch on
-  ;; shake head
-  ;; auto-door switch off
+  (switchbot-action "/eng2/7f/new/autodoor/switch" "on")
+  (move-torso-and-autodoor-open "/eng2/7f/old/autodoor/switch")
   (go-to-3f-auto-door 2)
-  (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
-  (wait-for-julius-trigger "すすんで")
+  ;; (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
+  ;; (wait-for-julius-trigger "すすんで")
   (force-go-through-3f-auto-door 2 0.5 3)
-  ;; auto-door switch on
+  (switchbot-action "/eng2/7f/old/autodoor/switch" "on")
   (go-to-office-kyoin)
   (send *ri* :speak-jp "届け物をしにきました" :wait t)
   (send *ri* :speak-jp "受け取ったら，受け取りましたと言ってください" :wait t)
   (wait-for-julius-trigger "うけとりました")
   (send *ri* :speak-jp "戻ります" :wait t)
   (go-to-3f-auto-door 3)
-  ;; shake head
-  ;; auto-door switch off
-  (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
-  (wait-for-julius-trigger "すすんで")
+  (move-torso-and-autodoor-open "/eng2/7f/old/autodoor/switch")
+  ;; (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
+  ;; (wait-for-julius-trigger "すすんで")
   (force-go-through-3f-auto-door 3 0.5 3)
-  ;; switch on
-  ;; shake head
-  ;; auto-door switch off
+  (switchbot-action "/eng2/7f/old/autodoor/switch" "on")
   (go-to-3f-auto-door 4)
-  (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
-  (wait-for-julius-trigger "すすんで")
+  (move-torso-and-autodoor-open "/eng2/7f/new/autodoor/switch")
+  ;; (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
+  ;; (wait-for-julius-trigger "すすんで")
   (go-through-3f-auto-door)
-  ;; auto-door switch on
+  (switchbot-action "/eng2/7f/new/autodoor/switch" "on")
   )
