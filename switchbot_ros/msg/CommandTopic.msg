@@ -1,0 +1,2 @@
+string nickname
+string command

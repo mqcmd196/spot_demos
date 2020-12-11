@@ -4,6 +4,7 @@ import time
 import rospy
 from switchbot_ros.srv import Command
 from switchbot_ros.srv import CommandResponse
+from switchbot_ros.msg import CommandTopic
 from switchbot import SwitchBotRequest
 
 class SwitchBotServer:
@@ -12,10 +13,22 @@ class SwitchBotServer:
     Please setup your SwitchBot device as the README shows.
     """
     def __init__(self):
+        rospy.init_node('switchbot_server')
         self._ifttt_key = rospy.get_param('~ifttt_key')
         self.on_server = rospy.Service('~on', Command, self.on)
         self.off_server = rospy.Service('~off', Command, self.off)
         self.press_server = rospy.Service('~press', Command, self.press)
+        self.sub = rospy.Subscriber('~command', CommandTopic, self.callback)
+
+    def callback(self, data):
+        if data.command == 'on':
+            self.on(data)
+        elif data.command == 'off':
+            self.off(data)
+        elif data.command == 'press':
+            self.press(data)
+        else:
+            rospy.logerr('Unknown command was subscribed.')
         
     def _post_command(self, data, command):
         # define response
@@ -46,6 +59,8 @@ class SwitchBotServer:
         return self._post_command(data, 'press')
 
 if __name__ == '__main__':
-    rospy.init_node('switchbot_server')
-    app = SwitchBotServer()
-    rospy.spin()
+    try:
+        node = SwitchBotServer()
+        rospy.spin()
+    except rospy.ROSInterruptException:
+        pass
