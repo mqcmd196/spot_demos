@@ -7,11 +7,12 @@
 (ros::load-ros-manifest "std_msgs")
 
 ;; for switchbot ros
-(ros::roseus "switchbot_server")
+(ros::roseus "switchbot_publisher")
+(ros::load-ros-manifest "switchbot_ros")
 (ros::wait-for-service "switchbot_server/on")
 (ros::wait-for-service "switchbot_server/off")
 (ros::wait-for-service "switchbot_server/press")
-(ros::load-ros-manifest "switchbot_ros")
+(ros::advertise "/switchbot_server/command" switchbot_ros::CommandTopic 1)
 
 ;; global variables 
 (setq *default-local-inflation-radius* (ros::get-param "/move_base/local_costmap/inflater/inflation_radius"))
@@ -41,9 +42,16 @@
   (unix:sleep 1)
   (send *ri* :clear-costmap))
 
-(defun switchbot-action (nickname command)
+(defun switchbot-srv (nickname command)
   (let
       ((req (instance switchbot_ros::CommandRequest :init))
        res)
     (send req :nickname nickname)
     (setq res (ros::service-call (concatenate string "switchbot_server/" command) req t))))
+
+(defun switchbot-topic (nickname command)
+  (let
+      ((msg (instance switchbot_ros::CommandTopic :init)))
+    (send msg :nickname nickname)
+    (send msg :command command)
+    (ros::publish "/switchbot_server/command" msg)))

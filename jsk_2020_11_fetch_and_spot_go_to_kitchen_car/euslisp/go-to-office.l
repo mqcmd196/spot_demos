@@ -8,6 +8,7 @@
 (setq *go-to-office* t)
 
 (ros::load-ros-manifest "geometry_msgs")
+(ros::load-ros-manifest "switchbot_ros")
 (ros::advertise "/initialpose" geometry_msgs::PoseWithCovarianceStamped 1)
 
 ;; auto-door-coords
@@ -55,7 +56,7 @@
 
 (defun move-torso-and-autodoor-open(nickname)
   (move-torso 280 40 1 3000)
-  (switchbot-action nickname "off")
+  (switchbot-topic nickname "off")
   (move-torso 280 40 3 3000))
 
 (defun go-through-3f-auto-door()
@@ -128,13 +129,13 @@
   ;; (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
   ;; (wait-for-julius-trigger "すすんで")
   (go-through-3f-auto-door)
-  (switchbot-action "/eng2/3f/new/autodoor/switch" "on")
+  (switchbot-srv "/eng2/3f/new/autodoor/switch" "on")
   (move-torso-and-autodoor-open "/eng2/3f/old/autodoor/switch")
   (go-to-3f-auto-door 2)
   ;; (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
   ;; (wait-for-julius-trigger "すすんで")
   (force-go-through-3f-auto-door 2 0.5 3)
-  (switchbot-action "/eng2/3f/old/autodoor/switch" "on")
+  (switchbot-srv "/eng2/3f/old/autodoor/switch" "on")
   (go-to-office-kyoin)
   (send *ri* :speak-jp "届け物をしにきました" :wait t)
   (send *ri* :speak-jp "受け取ったら，受け取りましたと言ってください" :wait t)
@@ -145,11 +146,11 @@
   ;; (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
   ;; (wait-for-julius-trigger "すすんで")
   (force-go-through-3f-auto-door 3 0.5 3)
-  (switchbot-action "/eng2/3f/old/autodoor/switch" "on")
+  (switchbot-srv "/eng2/3f/old/autodoor/switch" "on")
   (go-to-3f-auto-door 4)
   (move-torso-and-autodoor-open "/eng2/3f/new/autodoor/switch")
   ;; (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
   ;; (wait-for-julius-trigger "すすんで")
   (go-through-3f-auto-door)
-  (switchbot-action "/eng2/3f/new/autodoor/switch" "on")
+  (switchbot-srv "/eng2/3f/new/autodoor/switch" "on")
   )
