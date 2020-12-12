@@ -17,6 +17,9 @@
 (setq *3f-auto-door-3* (make-coords :pos #f(22627 -32752 0) :rpy (float-vector pi 0 0)))
 (setq *3f-auto-door-4* (make-coords :pos #f(12574 -28000 0) :rpy (float-vector pi 0 0)))
 
+(setq *3f-auto-door-3-front* (make-coords :pos #f(23563.762 -33036.666 0) :rpy (float-vector pi 0 0)))
+(setq *3f-auto-door-2-front* (make-coords :pos #f(19565.953 -31900.345 0) :rpy (float-vector -0.541 0 0)))
+
 ;; inv auto-door-coords
 (setq *3f-auto-door-1-inv* (make-coords :pos #f(10574 -28000 0) :rpy (float-vector pi 0 0)))
 (setq *3f-auto-door-2-inv* (make-coords :pos #f(20473 -32738 0) :rpy (float-vector pi 0 0)))
@@ -24,7 +27,8 @@
 (setq *3f-auto-door-4-inv* (make-coords :pos #f(12574 -28000 0) :rpy (float-vector 0 0 0)))
 
 ;; auto-door-coords at rails
-(setq *3f-auto-door-2-force* (make-coords :pos #f(21822.95 -32752.961 0) :rpy #f(0.116 0 0)))
+;; (setq *3f-auto-door-2-force* (make-coords :pos #f(21822.95 -32752.961 0) :rpy #f(0.116 0 0)))
+(setq *3f-auto-door-2-force* (make-coords :pos #f(21127.671 -32714.671 0) :rpy #f(-0.005 0 0)))
 (setq *3f-auto-door-3-force* (make-coords :pos #f(21825.617 -32760.204 0) :rpy #f(3.04 0 0)))
 
 ;; define movements
@@ -62,12 +66,22 @@
   (move-torso-and-head 280 40 -60 60 2 3000)
   (send *ri* :angle-vector (send *fetch* :reset-pose) 2000))
 
+(defun rotate-and-autodoor-open(nickname)
+)
+
 (defun go-through-3f-auto-door()
   (send *ri* :speak-jp "一気に進みます" :wait t)
   (change-dynamic-param :local-inflation-radius 0.3 :global-inflation-radius 0.3 :max-vel-x 0.6 :min-vel-x 0.3)
   (send *ri* :go-pos 2.5 0 0)
   (change-dynamic-param)
   )
+
+(defun get-target-theta-from-me (robot-worldcoords target-worldpos)
+  ;; robot-world-coords : the robot's world coords
+  ;; target-x, y : the target's world x,y coords
+  (let ((target-relative-pos))
+    (setq target-relative-pos (send robot-worldcoords :inverse-transform-vector target-worldpos))
+    (atan2 (elt target-relative-pos 1) (elt target-relative-pos 0))))
 
 (defun turn-to-the-target(target-world-pos vel-rate delta-th)
   (let (current-world-pos target-theta-from-me)
@@ -90,17 +104,19 @@
 
 (defun force-go-through-3f-auto-door(door x-vel times)
   (send *ri* :speak-jp "無理やり進みます")
-  (let (target-world-pos via-world-pos)
+  (let (target-world-pos via-world-pos door-front-pos)
     (cond
       ((= door 1)
        (setq target-world-pos *3f-auto-door-4-inv*)
        (setq via-world-pos *3f-auto-door-1-force*))
       ((= door 2)
        (setq target-world-pos *3f-auto-door-3-inv*)
-       (setq via-world-pos *3f-auto-door-2-force*))
+       (setq via-world-pos *3f-auto-door-2-force*)
+       (setq door-front-pos *3f-auto-door-3-front*))
       ((= door 3)
        (setq target-world-pos *3f-auto-door-2-inv*)
-       (setq via-world-pos *3f-auto-door-3-force*))
+       (setq via-world-pos *3f-auto-door-3-force*)
+       (setq door-front-pos *3f-auto-door-2-front*))
       ((= door 4)
        (setq target-world-pos *3f-auto-door-1-inv*)
        (setq via-world-pos *3f-auto-door-4-force*)))
@@ -113,7 +129,7 @@
     (dotimes (i times)
       (ros::ros-warn "go-velocity")
       (send *ri* :go-velocity x-vel 0 0))
-    (turn-to-the-target target-world-pos 0.7 0.1)
+    (turn-to-the-target door-front-pos 0.7 0.1)
     (send *ri* :go-velocity 0.2 0 0))
   (change-dynamic-param))
 
@@ -134,7 +150,7 @@
   (go-through-3f-auto-door)
   (switchbot-topic "/eng2/3f/new/autodoor/switch" "on")
   (go-to-3f-auto-door 2)
-  (move-torso-and-autodoor-open "/eng2/3f/old/autodoor/switch")
+  (move-torso-and-head-and-autodoor-open "/eng2/3f/old/autodoor/switch")
   ;; (send *ri* :speak-jp "自動ドアがあいたらすすんでと言ってください" :wait t)
   ;; (wait-for-julius-trigger "すすんで")
   (force-go-through-3f-auto-door 2 0.5 3)
