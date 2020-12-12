@@ -70,10 +70,9 @@
   (send *ri* :speak-jp "その場で回転しながらドアを開けます")
   (dotimes (i 4)
     (send *ri* :go-velocity 0 0 2))
-  (switchbot-topic nickname "press")
+  (switchbot-topic nickname "off")
   (dotimes (i 5)
     (send *ri* :go-velocity 0 0 2))
-  (send *ri* :move-to finish-pos)
   (go-to-3f-auto-door door))
 
 (defun go-through-3f-auto-door()
