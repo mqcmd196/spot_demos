@@ -46,10 +46,7 @@
            (send *ri* :speak-jp "エレベータの上ボタンを押します" :wait t)
            (switchbot-topic (concatenate string "/eng2/" (string goal-floor) "f/elevator/up/button" ) "press")))
     (send *ri* :speak-jp (concatenate string (string goal-floor) "階のボタンを押しました") :wait t)
-    ;; before getting on the elevator
-    (send *ri* :speak-jp "エレベータがついたらすすんでと言ってください" :wait t)
-    (wait-for-julius-trigger "すすんで")
-    
+        
     ;; get on the elevator
     (send *ri* :speak-jp "前に進みます" :wait t)
     (let ((local-inflation-radius (ros::get-param "/move_base/local_costmap/inflater/inflation_radius"))
