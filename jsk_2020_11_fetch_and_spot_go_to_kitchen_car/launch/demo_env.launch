@@ -1,7 +1,9 @@
 <launch>
   <!-- main node -->
-  <arg name="fetch_bringup" default="true" />
+  <!-- It is enough to kill /mongodb node. -->
+  <arg name="fetch_bringup" default="false" />
   <arg name="switchbot_ros" default="true" />
+  <arg name="elevator_move_base_fetch" default="true" />
 
   <!-- fetch_bringup options -->
   <arg name="battery_warning" default="false" />
@@ -25,7 +27,13 @@
 
   <!-- for using switchbot_ros -->
   <rosparam command="load" file="$(find switchbot_ros)/keys/ifttt.yaml"/>
-  <node pkg="switchbot_ros" name="switchbot_server" type="switchbot_ros_server.py" respawn="true" if="$(arg switchbot_ros)">
-  </node>
+  <node pkg="switchbot_ros" name="switchbot_server" type="switchbot_ros_server.py" respawn="true" if="$(arg switchbot_ros)" />
+  <node pkg="switchbot_ros" name="switchbot_continuous_press_server" type="switchbot_ros_continuous_press_server.py" respawn="true" if="$(arg switchbot_ros)" />
+
+  <!-- for using elevator_move_base_fetch -->
+  <group if="$(arg elevator_move_base_fetch)">
+    <include file="$(find elevator_move_base_fetch)/launch/elevator_move_base_eng2.launch">
+    </include>
+  </group>
   
 </launch>
