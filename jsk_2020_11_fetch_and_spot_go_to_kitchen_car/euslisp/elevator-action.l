@@ -8,6 +8,7 @@
 
 ;; for elevator detect node
 (ros::roseus-add-msgs "geometry_msgs")
+(ros::roseus-add-msgs "sensor_msgs")
 (ros::roseus-add-msgs "roseus")
 
 (setq *elevator-action* t)
@@ -18,6 +19,48 @@
 (setq *3f-elevator-hall* (make-coords :pos #f(1837 -30734 -0) :rpy (float-vector -pi/2 0 0)))
 (setq *7f-elevator-hall* (make-coords :pos #f(1850 -30746 0) :rpy (float-vector -pi/2 0 0)))
 
+;; utils
+(defun check-elevator-open (&key (timeout 300))
+  ;; This function is cited from jsk_demos/elevator_move_base_pr2
+  (let ((topic
+         "/check_elevator_open/octree_change_publisher/octree_change_result")
+        (change-thre (ros::get-param "change_threshold" 400))
+        (change-pc nil) time-start)
+    (send *fetch* :head :angle-vector #f(0 0))
+    (send *ri* :angle-vector (send *fetch* :angle-vector) 400)
+    (send *ri* :wait-interpolation)
+    
+    (setq time-start (ros::time-now))
+    (ros::subscribe
+     topic sensor_msgs::PointCloud2
+     #'(lambda (msg)
+         (when msg
+           (let ((stamp (send msg :header :stamp)))
+             ;; Wait until point cloud becomes stable
+             (when (ros::time> stamp (ros::time+ time-start (ros::time 0.5)))
+               (setq change-pc (* (send msg :height) (send msg :width)))
+               (ros::ros-info "pointcloud change: ~A, open/closed threshold: ~A"
+                              change-pc change-thre))))))
+
+    (ros::rate 10)
+    (while (or (null change-pc) (< change-pc change-thre))
+      (ros::spin-once)
+      (when (ros::time> (ros::time-now)
+                        (ros::time+ time-start (ros::time timeout)))
+        (ros::warn
+         (format nil "Could not detect door opening in ~A [sec]." timeout))
+        (send *ri* :speak-jp "ドアが開いていません。")
+        (ros::unsubscribe topic)
+        (return-from check-elevator-open nil))
+      (ros::sleep))
+
+    (ros::unsubscribe topic)
+    (ros::ros-info "Door opened.")
+    (send *ri* :speak-jp "ドアが開きました。")
+    (clear-costmap)
+    t))
+
+;; main functions
 (defun go-to-current-floor-elevator-hall()
   (let ((current-floor (get-current-floor)))
     (send *ri* :speak-jp (concatenate string (string current-floor) "階のエレベータホールに向かいます") :wait t)
@@ -48,7 +91,6 @@
     (send *ri* :speak-jp (concatenate string (string goal-floor) "階のボタンを押しました") :wait t)
         
     ;; get on the elevator
-    (send *ri* :speak-jp "前に進みます" :wait t)
     (let ((local-inflation-radius (ros::get-param "/move_base/local_costmap/inflater/inflation_radius"))
           (global-inflation-radius (ros::get-param "/move_base/global_costmap/inflater/inflation_radius")))
       (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double 0.3)
@@ -59,21 +101,15 @@
       (send *ri* :go-pos 3.0 0 180)
       (unix:sleep 1)
       (send *ri* :speak-jp "エレベータに乗りました" :wait t)
-      ;; swbot request pushing the button
-      ;; WIP remain pushing
-      (send *ri* :speak-jp (concatenate string "エレベータの" (string goal-floor) "階のボタンを押してください") :wait t)
+      ;; sw bot request pushing the destination button
       (change-floor (concatenate string "/eng2/" (string goal-floor) "f") :base-frame-name "/base_link")
       (send *ri* :speak-jp (concatenate string "マップを" (string goal-floor) "階に切り替えました") :wait t)
-      (send *ri* :speak-jp "エレベータがついたら進んでと言ってください" :wait t)
-      ;; detect current floor
-      (wait-for-julius-trigger "すすんで")
-      ;; get off the elevator
-      ;; detect door close
+      ;; detect current floor as destination floor
+      ;; remain pushing current floor button
       (send *ri* :speak-jp "前に進みます" :wait t)
       (send *ri* :clear-costmap)
       (send *ri* :go-pos 3.5 0 0)
       (unix:sleep 1)
       (send *ri* :speak-jp "エレベータからおりました" :wait t)
       (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double local-inflation-radius)
-      (ros::set-dynamic-reconfigure-param "/move_base/global_costmap/inflater" "inflation_radius" :double global-inflation-radius))
-    ))
+      (ros::set-dynamic-reconfigure-param "/move_base/global_costmap/inflater" "inflation_radius" :double global-inflation-radius))))
