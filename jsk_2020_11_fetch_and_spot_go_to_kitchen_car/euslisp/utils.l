@@ -42,6 +42,12 @@
   (unix:sleep 1)
   (send *ri* :clear-costmap))
 
+(defun call-service (service req)
+  ;; cited from elevator_move_base_pr2
+  (if (ros::wait-for-service service 0)
+      (ros::service-call service req)
+      nil))
+
 (defun switchbot-srv (nickname command)
   (let
       ((req (instance switchbot_ros::CommandRequest :init))
@@ -49,9 +55,11 @@
     (send req :nickname nickname)
     (setq res (ros::service-call (concatenate string "switchbot_server/" command) req t))))
 
-(defun switchbot-topic (nickname command)
+(defun switchbot-topic (nickname command &key (times 1) (sleep 1))
   (let
       ((msg (instance switchbot_ros::CommandTopic :init)))
     (send msg :nickname nickname)
     (send msg :command command)
+    (send msg :times times)
+    (send msg :sleep sleep)
     (ros::publish "/switchbot_server/command" msg)))
