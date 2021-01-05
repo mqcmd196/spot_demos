@@ -26,7 +26,12 @@ class SwitchBotServer:
         elif data.command == 'off':
             self.off(data)
         elif data.command == 'press':
-            self.press(data)
+            if data.times > 1:
+                for t in range(data.times):
+                    self.press(data)
+                    time.sleep(data.sleep)
+            else:
+                self.press(data)
         else:
             rospy.logerr('Unknown command was subscribed.')
         
