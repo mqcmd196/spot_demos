@@ -35,11 +35,5 @@
     <include file="$(find elevator_move_base_fetch)/launch/elevator_move_base_eng2.launch">
     </include>
   </group>
-
-  <!-- for using check_elevator_open -->
-  <group if="$(arg elevator_move_base_fetch)">
-    <include file="$(find elevator_move_base_fetch)/launch/check_elevator_open.xml">
-    </include>
-  </group>
   
 </launch>
