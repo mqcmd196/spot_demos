@@ -136,30 +136,32 @@
         
     ;; get on the elevator 
     (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double 0.25)
-    (ros::set-dynamic-reconfigure-param "/move_base/global_costmap/inflater" "inflation_radius" :double 0.25)
+    (ros::set-dynamic-reconfigure-param "/move_base/global_costmap/inflater" "inflation_radius" :double 0.15)
     (check-elevator-open)
     (send *ri* :speak-jp "ボタンを長押しします")
-    (switchbot-topic start-button "press" :times 3 :sleep 5) ;; for remain open
+    (switchbot-topic start-button "press" :times 4 :sleep 5) ;; for remain open
+    (send *ri* :speak-jp "前に進みます")
     (send *ri* :clear-costmap)
     (cond ((= start-floor 2)
            ;; (send *ri* :move-to *2f-elevator* :frame-id "/map" :wait t)
-	   (send *ri* :go-pos 2.75 0 180 :wait t))
+	   (send *ri* :go-pos 2.75 0 90 :wait t))
 	  ((= start-floor 3)
            ;; (send *ri* :move-to *3f-elevator* :frame-id "/map" :wait t)
-	   (send *ri* :go-pos 3.0 0 180 :wait t))
+	   (send *ri* :go-pos 2.9 0 90 :wait t))
           ((= start-floor 7)
            ;; (send *ri* :move-to *7f-elevator* :frame-id "/map" :wait t)
-	   (send *ri* :go-pos 3.1 0 180 :wait t)))
+	   (send *ri* :go-pos 3.0 0 90 :wait t)))
     (send *ri* :speak-jp "エレベータに乗りました" :wait t)
     (send *fetch* :head :angle-vector #f(-90 11)) ;; for looking at the panel
     (send *ri* :angle-vector (send *fetch* :angle-vector) 400)
     (switchbot-topic goal-button "press") ;; press the destination's button
     (send *ri* :speak-jp (concatenate string (string goal-floor) "階のボタンを押しました"))
     (check-target-floor-arrived goal-floor) ;; detect current floor as destination floor
-    (switchbot-topic goal-button "press" :times 3 :sleep 5) ;; for remain open
+    (send *ri* :speak-jp "到着したので動きます")
+    (switchbot-topic goal-button "press" :times 4 :sleep 5) ;; for remain open
     (change-floor (concatenate string "/eng2/" (string goal-floor) "f") :base-frame-name "/base_link") ;; change map
     (send *ri* :speak-jp (concatenate string "マップを" (string goal-floor) "階に切り替えました"))
-    (send *ri* :speak-jp "前に進みます")
+    (send *ri* :go-pos-unsafe 0 0 90)
     (send *ri* :clear-costmap)
     (send *ri* :go-pos 4.0 0 0)
     (unix:sleep 1)
