@@ -74,7 +74,7 @@
         (cur-floor nil))
     (ros::rate 10)
     (while (ros::ok)
-      (update 1)
+      ;; (update 1)
       (ros::spin-once)
       (when (send topic :msg)
         (setq cur-floor (string-upcase (send topic :msg :data))))
@@ -83,11 +83,12 @@
         (setq prev-reset-time (ros::time-now))
         (setq prev-floor cur-floor))
       (when (and cur-floor
-                 (substringp (concatenate string "/" target-floor) cur-floor))
+                 (substringp (concatenate string "/" (string target-floor) "f") cur-floor))
+        (send *ri* :speak-jp "目的のフロアに到着しました")
+        (call-service "/head_camera/mono/pass_through_image_rect/stop" (instance std_srvs::EmptyRequest :init))
+        (call-service "/head_camera/mono/pass_through_feature_to_inside_panel/stop" (instance std_srvs::EmptyRequest :init))
         (return-from check-target-floor-arrived t))
-      (ros::sleep)))
-  (call-service "/head_camera/mono/pass_through_image_rect/stop" (instance std_srvs::EmptyRequest :init))
-  (call-service "/head_camera/mono/pass_through_feature_to_inside_panel/stop" (instance std_srvs::EmptyRequest :init)))
+      (ros::sleep))))
 
 ;; main functions
 (defun go-to-current-floor-elevator-hall()
@@ -105,7 +106,6 @@
            (unix:sleep 1)))))
 
 (defun get-on-and-off-eng2-elevator(start-floor goal-floor)
-  ;; Please use this function 2.0m~2.5m before the elevator door.
   (let ((building "/eng2/")
         (local-inflation-radius (ros::get-param "/move_base/local_costmap/inflater/inflation_radius"))
         (global-inflation-radius (ros::get-param "/move_base/global_costmap/inflater/inflation_radius"))
@@ -130,24 +130,24 @@
     ;; get on the elevator 
     (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double 0.3)
     (ros::set-dynamic-reconfigure-param "/move_base/global_costmap/inflater" "inflation_radius" :double 0.3)
-    ;; remain pushing current floor button
     (check-elevator-open)
     (send *ri* :speak-jp "ボタンを長押しします")
-    (switchbot-topic start-button "press" :times 3 :sleep 12) ;; for remain open
+    (switchbot-topic start-button "press" :times 3 :sleep 5) ;; for remain open
     (send *ri* :clear-costmap)
     (send *ri* :go-pos 2.0 0 180) ;; make short 1m
     (unix:sleep 1)
-    (send *ri* :speak-jp "エレベータに乗りました" :wait t)
-    ;; sw bot request pushing the destination button
-    (switchbot-topic goal-button "press")
+    (send *ri* :speak-jp "エレベータに乗りました")
+    (send *fetch* :head :angle-vector #f(-90 15)) ;; for looking at the panel
+    (send *ri* :angle-vector (send *fetch* :angle-vector) 400)
+    (switchbot-topic goal-button "press") ;; press the destination's button
     (send *ri* :speak-jp (concatenate string (string goal-floor) "階のボタンを押しました"))
-    (change-floor (concatenate string "/eng2/" (string goal-floor) "f") :base-frame-name "/base_link")
+    (change-floor (concatenate string "/eng2/" (string goal-floor) "f") :base-frame-name "/base_link") ;; change map
     (send *ri* :speak-jp (concatenate string "マップを" (string goal-floor) "階に切り替えました"))
-    ;; detect current floor as destination floor
-    ;; remain pushing current floor button
+    (check-target-floor-arrived goal-floor) ;; detect current floor as destination floor
+    (switchbot-topic goal-button "press" :times 3 :sleep 5) ;; for remain open
     (send *ri* :speak-jp "前に進みます" :wait t)
     (send *ri* :clear-costmap)
-    (send *ri* :go-pos 3.5 0 0)
+    (send *ri* :go-pos 2.5 0 0)
     (unix:sleep 1)
     (send *ri* :speak-jp "エレベータからおりました" :wait t)
     (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double local-inflation-radius)
