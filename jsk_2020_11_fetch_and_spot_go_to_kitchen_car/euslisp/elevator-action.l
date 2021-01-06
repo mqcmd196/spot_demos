@@ -22,6 +22,9 @@
 (setq *3f-elevator-hall* (make-coords :pos #f(2012.483 -30869.959 0) :rpy (float-vector -pi/2 0 0)))
 ;; (setq *7f-elevator-hall* (make-coords :pos #f(1850 -30746 0) :rpy (float-vector -pi/2 0 0)))
 (setq *7f-elevator-hall* (make-coords :pos #f(2088.555 -31225.784 0) :rpy (float-vector -pi/2 0 0)))
+(setq *2f-elevator* (make-coords :pos #f(2165.701 -33936.09 0) :rpy (float-vector pi/2 0 0)))
+(setq *3f-elevator* (make-coords :pos #f(2082.125 -33930.505 0) :rpy (float-vector pi/2 0 0)))
+(setq *7f-elevator* (make-coords :pos #f(2147.634 -33961.08 0) :rpy (float-vector pi/2 0 0)))
 
 ;; utils
 (defun check-elevator-open (&key (timeout 300))
@@ -135,10 +138,14 @@
     (send *ri* :speak-jp "ボタンを長押しします")
     (switchbot-topic start-button "press" :times 3 :sleep 5) ;; for remain open
     (send *ri* :clear-costmap)
-    (send *ri* :go-pos 3.0 0 180) ;; make short 1m
-    (unix:sleep 1)
+    (cond ((= start-floor 2)
+           (send *ri* :move-to *2f-elevator* :frame-id "/map"))
+          ((= start-floor 3)
+           (send *ri* :move-to *3f-elevator* :frame-id "/map"))
+          ((= start-floor 7)
+           (send *ri* :move-to *7f-elevator* :frame-id "/map")))
     (send *ri* :speak-jp "エレベータに乗りました")
-    (send *fetch* :head :angle-vector #f(-90 15)) ;; for looking at the panel
+    (send *fetch* :head :angle-vector #f(-90 11)) ;; for looking at the panel
     (send *ri* :angle-vector (send *fetch* :angle-vector) 400)
     (switchbot-topic goal-button "press") ;; press the destination's button
     (send *ri* :speak-jp (concatenate string (string goal-floor) "階のボタンを押しました"))
