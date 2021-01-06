@@ -109,7 +109,8 @@
   (let ((building "/eng2/")
         (local-inflation-radius (ros::get-param "/move_base/local_costmap/inflater/inflation_radius"))
         (global-inflation-radius (ros::get-param "/move_base/global_costmap/inflater/inflation_radius"))
-        (start-button goal-button))
+        (start-button)
+	(goal-button))
     ;; speak which button to push
     (ros::ros-info "start floor:~d goal-floor:~d" start-floor goal-floor)
     (cond ((= start-floor goal-floor)
@@ -134,7 +135,7 @@
     (send *ri* :speak-jp "ボタンを長押しします")
     (switchbot-topic start-button "press" :times 3 :sleep 5) ;; for remain open
     (send *ri* :clear-costmap)
-    (send *ri* :go-pos 2.0 0 180) ;; make short 1m
+    (send *ri* :go-pos 3.0 0 180) ;; make short 1m
     (unix:sleep 1)
     (send *ri* :speak-jp "エレベータに乗りました")
     (send *fetch* :head :angle-vector #f(-90 15)) ;; for looking at the panel
@@ -147,7 +148,7 @@
     (switchbot-topic goal-button "press" :times 3 :sleep 5) ;; for remain open
     (send *ri* :speak-jp "前に進みます" :wait t)
     (send *ri* :clear-costmap)
-    (send *ri* :go-pos 2.5 0 0)
+    (send *ri* :go-pos 4.0 0 0)
     (unix:sleep 1)
     (send *ri* :speak-jp "エレベータからおりました" :wait t)
     (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double local-inflation-radius)
