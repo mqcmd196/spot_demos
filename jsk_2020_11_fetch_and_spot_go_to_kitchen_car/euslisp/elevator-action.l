@@ -75,9 +75,7 @@
 (defun look-button-state ()
   (let ((panel-name "/elevator_inside_panel") look-target look-av)
     (update-robot-position)
-
     (setq *panel* (car (send *scene* :find-object panel-name)))
-
     (setq look-target
           (car (send *scene* :find-object
                      (format nil "~A~A" (check-current-floor *scene* *tfl*)
