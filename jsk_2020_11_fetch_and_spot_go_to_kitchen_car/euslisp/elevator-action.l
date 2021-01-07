@@ -105,6 +105,7 @@
     ;;     (call-service
     ;;      "/head_camera/mono/pass_through_feature_to_call_panel/request"
     ;;      (instance std_srvs::EmptyRequest :init))
+    (call-service "/head_camera/mono/pass_through_image_rect/request" (instance std_srvs::EmptyRequest :init))
     (call-service
      "/head_camera/mono/pass_through_feature_to_inside_panel/request"
      (instance std_srvs::EmptyRequest :init))
@@ -120,13 +121,14 @@
       (ros::ros-info "Could not find button.")
       (speak-jp "見つかりませんでした。")
       (return-from look-button-state nil))
-    (if (equal panel-name "/elevator_call_panel")
-        (call-service
-         "/head_camera/mono/pass_through_feature_to_call_panel/stop"
-         (instance std_srvs::EmptyRequest :init))
-      (call-service
-       "/head_camera/mono/pass_through_feature_to_inside_panel/stop"
-       (instance std_srvs::EmptyRequest :init)))
+    ;; (if (equal panel-name "/elevator_call_panel")
+    ;;     (call-service
+    ;;      "/head_camera/mono/pass_through_feature_to_call_panel/stop"
+    ;;      (instance std_srvs::EmptyRequest :init))
+    (call-service "/head_camera/mono/pass_through_image_rect/stop" (instance std_srvs::EmptyRequest :init))
+    (call-service
+     "/head_camera/mono/pass_through_feature_to_inside_panel/stop"
+     (instance std_srvs::EmptyRequest :init))
     t))
 
 (defun check-elevator-open (&key (timeout 300))
@@ -255,13 +257,13 @@
     (send *ri* :clear-costmap)
     (cond ((= start-floor 2)
            ;; (send *ri* :move-to *2f-elevator* :frame-id "/map" :wait t)
-	   (send *ri* :go-pos 2.75 0 90 :wait t))
+	   (send *ri* :go-pos 2.75 0 180))
 	  ((= start-floor 3)
            ;; (send *ri* :move-to *3f-elevator* :frame-id "/map" :wait t)
-	   (send *ri* :go-pos 2.9 0 90 :wait t))
+	   (send *ri* :go-pos 2.9 0 180))
           ((= start-floor 7)
            ;; (send *ri* :move-to *7f-elevator* :frame-id "/map" :wait t)
-	   (send *ri* :go-pos 3.0 0 90 :wait t)))
+	   (send *ri* :go-pos 3.0 0 180)))
     (send *ri* :speak-jp "エレベータに乗りました" :wait t)
     (send *fetch* :head :angle-vector #f(-90 11)) ;; for looking at the panel
     (send *ri* :angle-vector (send *fetch* :angle-vector) 400)
