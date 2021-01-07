@@ -7,6 +7,7 @@
 (unless (boundp '*utils*) (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/utils.l"))
 
 ;; for elevator detect node
+(load "package://elevator_move_base_fetch/src/find-elevator-button.l")
 (load "package://elevator_move_base_fetch/src/ros-callback-manager.l")
 (ros::roseus-add-msgs "geometry_msgs")
 (ros::roseus-add-msgs "sensor_msgs")
@@ -69,9 +70,22 @@
     t))
 
 (defun check-target-floor-arrived(target-floor)
-  ;; expected to be used in the elevator and look at the floor panel
+  ;; expected to be used in the elevator
   (call-service "/head_camera/mono/pass_through_image_rect/request" (instance std_srvs::EmptyRequest :init))
   (call-service "/head_camera/mono/pass_through_feature_to_inside_panel/request" (instance std_srvs::EmptyRequest :init))
+  ;; look at elevator inside panel
+  (let ((look-target
+         (or (find-if #'(lambda (x) (string= (send x :name) "/elevator_number"))
+                      (send *panel* :descendants))
+             *panel*)))
+    (send *fetch* :head :look-at (send look-target :worldpos))
+    ;; Move fast but converge to the target angle vector
+    (until (eps-v= (send *fetch* :angle-vector)
+                   (send *ri* :state :potentio-vector)
+                   1.0)
+           (send *ri* :angle-vector (send *fetch* :angle-vector) 500)
+           (send *ri* :wait-interpolation)))
+  ;; detect current floor
   (let ((topic
          (instance ros-callback-message
                    :init roseus::StringStamped "/elevator_number/result"))

@@ -48,6 +48,11 @@
       (ros::service-call service req)
       nil))
 
+(defun update-robot-position ()
+  (ros::spin-once)
+  (send *fetch* :move-to (send *ri* :state :worldcoords) :world)
+  (send *fetch* :angle-vector (send *ri* :state :potentio-vector)))
+
 (defun switchbot-srv (nickname command)
   (let
       ((req (instance switchbot_ros::CommandRequest :init))
