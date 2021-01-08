@@ -280,9 +280,8 @@
     (switchbot-topic goal-button "press" :times 4 :sleep 5) ;; for remain open
     (change-floor (concatenate string "/eng2/" (string goal-floor) "f") :base-frame-name "/base_link") ;; change map
     (send *ri* :speak-jp (concatenate string "マップを" (string goal-floor) "階に切り替えました"))
-    (send *ri* :go-pos-unsafe 0 0 90)
     (send *ri* :clear-costmap)
-    (send *ri* :go-pos 4.0 0 0)
+    (send *ri* :go-pos 3.0 0 0)
     (unix:sleep 1)
     (send *ri* :speak-jp "エレベータからおりました" :wait t)
     (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double local-inflation-radius)
