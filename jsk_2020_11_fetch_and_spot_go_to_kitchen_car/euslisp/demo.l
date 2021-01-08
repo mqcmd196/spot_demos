@@ -13,8 +13,9 @@
 (defun kitchen-car-mission()
   (go-to-2f-hall)
   (pass-mission-from-fetch-to-spot)
-  (get-lunch-box)
-  )
+  (get-lunch-box))
+
+
 
 (defun demo()
   (let ((default-xy-tolerance (ros::get-param "/move_base/TrajectoryPlannerROS/xy_goal_tolerance")) 
