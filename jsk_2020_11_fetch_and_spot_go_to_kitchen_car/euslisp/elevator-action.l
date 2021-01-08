@@ -8,12 +8,19 @@
 (unless (boundp '*fetch*) (fetch-init))
 
 ;; for elevator detect node
-(load "package://elevator_move_base_fetch/src/find-elevator-button.l")
+;; (load "package://elevator_move_base_fetch/src/find-elevator-button.l")
 (load "package://elevator_move_base_fetch/src/ros-callback-manager.l")
+(load "package://elevator_move_base_fetch/src/posedetectiondb-client.l")
 (load "package://elevator_move_base_fetch/src/utils.l")
 (ros::roseus-add-msgs "geometry_msgs")
 (ros::roseus-add-msgs "sensor_msgs")
 (ros::roseus-add-msgs "roseus")
+;; use these var instead of find-elevator-button.l
+(setq *scene* (make-scene-by-tf (instance ros::transform-listener :init)))
+(setq *clients* (init-posedetectiondb-client
+                 (list (send *scene* :object "/elevator_inside_panel")
+                       (send *scene* :object "/elevator_call_panel"))))
+
 
 (setq *elevator-action* t)
 
@@ -170,18 +177,18 @@
   ;; expected to be used in the elevator
   (call-service "/head_camera/mono/pass_through_image_rect/request" (instance std_srvs::EmptyRequest :init))
   (call-service "/head_camera/mono/pass_through_feature_to_inside_panel/request" (instance std_srvs::EmptyRequest :init))
-  ;; look at elevator inside panel
-  (let ((look-target
-         (or (find-if #'(lambda (x) (string= (send x :name) "/elevator_number"))
-                      (send *panel* :descendants))
-             *panel*)))
-    (send *fetch* :head :look-at (send look-target :worldpos))
-    ;; Move fast but converge to the target angle vector
-    (until (eps-v= (send *fetch* :angle-vector)
-                   (send *ri* :state :potentio-vector)
-                   1.0)
-           (send *ri* :angle-vector (send *fetch* :angle-vector) 500)
-           (send *ri* :wait-interpolation)))
+  ;; ;; look at elevator inside panel
+  ;; (let ((look-target
+  ;;        (or (find-if #'(lambda (x) (string= (send x :name) "/elevator_number"))
+  ;;                     (send *panel* :descendants))
+  ;;            *panel*)))
+  ;;   (send *fetch* :head :look-at (send look-target :worldpos))
+  ;;   ;; Move fast but converge to the target angle vector
+  ;;   (until (eps-v= (send *fetch* :angle-vector)
+  ;;                  (send *ri* :state :potentio-vector)
+  ;;                  1.0)
+  ;;          (send *ri* :angle-vector (send *fetch* :angle-vector) 500)
+  ;;          (send *ri* :wait-interpolation)))
   ;; detect current floor
   (let ((topic
          (instance ros-callback-message
@@ -191,7 +198,7 @@
         (cur-floor nil))
     (ros::rate 10)
     (while (ros::ok)
-      (update 1)
+      ;; (update 1)
       (ros::spin-once)
       (when (send topic :msg)
         (setq cur-floor (string-upcase (send topic :msg :data))))
