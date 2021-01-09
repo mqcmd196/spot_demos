@@ -26,15 +26,14 @@
 
 ;; set global variables
 ;; (setq *2f-elevator-hall-1* (make-coords :pos #f(2050 -29899 0.000) :rpy (float-vector -pi/2 0 0)))
-(setq *2f-elevator-hall-1* (make-coords :pos #f(2078.511 -31178.199 0.000) :rpy (float-vector -pi/2 0 0)))
-;; (setq *2f-elevator-hall-1* (make-coords :pos #f(1840 -31178.199 0.000) :rpy (float-vector -pi/2 0 0)))
+;; (setq *2f-elevator-hall-1* (make-coords :pos #f(2078.511 -31178.199 0.000) :rpy (float-vector -pi/2 0 0))) original
 (setq *2f-elevator-hall-2* (make-coords :pos #f(2145 -27902 0.000) :rpy (float-vector 0 0 0)))
 ;; (setq *3f-elevator-hall* (make-coords :pos #f(1837 -30734 -0) :rpy (float-vector -pi/2 0 0)))
-(setq *3f-elevator-hall* (make-coords :pos #f(2012.483 -30869.959 0) :rpy (float-vector -pi/2 0 0)))
-;; (setq *3f-elevator-hall* (make-coords :pos #f(1840 -30869.959 0) :rpy (float-vector -pi/2 0 0)))
+;; (setq *3f-elevator-hall* (make-coords :pos #f(2012.483 -30869.959 0) :rpy (float-vector -pi/2 0 0))) original
 ;; (setq *7f-elevator-hall* (make-coords :pos #f(1850 -30746 0) :rpy (float-vector -pi/2 0 0)))
+(setq *2f-elevator-hall-1* (make-coords :pos #f(2088.555 -31225.784 0) :rpy (float-vector -pi/2 0 0)))
+(setq *3f-elevator-hall* (make-coords :pos #f(2088.555 -31225.784 0) :rpy (float-vector -pi/2 0 0)))
 (setq *7f-elevator-hall* (make-coords :pos #f(2088.555 -31225.784 0) :rpy (float-vector -pi/2 0 0)))
-;; (setq *7f-elevator-hall* (make-coords :pos #f(1840 -31225.784 0) :rpy (float-vector -pi/2 0 0)))
 (setq *2f-elevator* (make-coords :pos #f(2165.701 -33936.09 0) :rpy (float-vector pi/2 0 0)))
 (setq *3f-elevator* (make-coords :pos #f(2082.125 -33930.505 0) :rpy (float-vector pi/2 0 0)))
 (setq *7f-elevator* (make-coords :pos #f(2147.634 -33961.08 0) :rpy (float-vector pi/2 0 0)))
@@ -277,10 +276,10 @@
     (send *ri* :speak-jp (concatenate string (string goal-floor) "階のボタンを押しました"))
     (look-button-state)
     (check-target-floor-arrived goal-floor) ;; detect current floor as destination floor
-    (send *ri* :speak-jp "到着したので動きます")
+    (send *ri* :speak-jp "到着したので動きます" :wait t)
     (switchbot-topic goal-button "press" :times 4 :sleep 5) ;; for remain open
+    (send *ri* :speak-jp (concatenate string "マップを" (string goal-floor) "階に切り替えました") :wait t)
     (change-floor (concatenate string "/eng2/" (string goal-floor) "f") :base-frame-name "/base_link") ;; change map
-    (send *ri* :speak-jp (concatenate string "マップを" (string goal-floor) "階に切り替えました"))
     (send *ri* :clear-costmap)
     (send *ri* :go-pos 3.0 0 0)
     (unix:sleep 1)
