@@ -120,7 +120,7 @@
 
     ;; Update *scene* (especially pose of *panel*) by TF
     (ros::ros-info "Looking for button...")
-    (speak-jp "ボタンを探しています。")
+    (speak-jp "パネルを探しています。")
     (ros::ros-info "Waiting for vision update...")
     (unless (update 10)
       (ros::ros-info "Could not find button.")
@@ -130,6 +130,7 @@
     ;;     (call-service
     ;;      "/head_camera/mono/pass_through_feature_to_call_panel/stop"
     ;;      (instance std_srvs::EmptyRequest :init))
+    (speak-jp "パネルが見つかりました。")
     (call-service "/head_camera/mono/pass_through_image_rect/stop" (instance std_srvs::EmptyRequest :init))
     (call-service
      "/head_camera/mono/pass_through_feature_to_inside_panel/stop"
@@ -208,7 +209,7 @@
         (setq prev-floor cur-floor))
       (when (and cur-floor
                  (substringp (concatenate string "/" (string target-floor) "f") cur-floor))
-        (send *ri* :speak-jp "目的のフロアに到着しました")
+        (send *ri* :speak-jp "到着しました")
         (call-service "/head_camera/mono/pass_through_image_rect/stop" (instance std_srvs::EmptyRequest :init))
         (call-service "/head_camera/mono/pass_through_feature_to_inside_panel/stop" (instance std_srvs::EmptyRequest :init))
         (return-from check-target-floor-arrived t))

@@ -19,4 +19,5 @@
   
   
   (auto-dock)
+  (send *ri* :speak-jp "おつかいタスクを終了しました" :wait t)
   )
