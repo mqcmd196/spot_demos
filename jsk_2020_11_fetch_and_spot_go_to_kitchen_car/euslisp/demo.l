@@ -43,8 +43,8 @@
              (go-to-73b2))
             (t
              nil)) ;; do nothing
-      (send *ri* :speak-jp "ドックに戻ります" :wait t)
-      (auto-dock)
+      ;; (send *ri* :speak-jp "ドックに戻ります" :wait t)
+      ;; (auto-dock)
       (ros::set-dynamic-reconfigure-param "/move_base/TrajectoryPlannerROS" "xy_goal_tolerance" :double default-xy-tolerance)
       (ros::set-dynamic-reconfigure-param "/move_base/TrajectoryPlannerROS" "yaw_goal_tolerance" :double default-yaw-tolerance))))
 
