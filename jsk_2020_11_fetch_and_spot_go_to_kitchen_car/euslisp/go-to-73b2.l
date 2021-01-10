@@ -17,7 +17,9 @@
   (go-to-current-floor-elevator-hall)
   (get-on-and-off-eng2-elevator (get-current-floor) 7)
   
-  
-  (auto-dock)
+  ;; auto-dock pos is fetch15 dock now.
+  ;; (auto-dock)
+  (send *ri* :move-to (make-coords :pos #f(2912.922 7180.515 0) :rpy (float-vector 1.549 0 0) :frame-id "/map"))
+
   (send *ri* :speak-jp "おつかいタスクを終了しました" :wait t)
   )

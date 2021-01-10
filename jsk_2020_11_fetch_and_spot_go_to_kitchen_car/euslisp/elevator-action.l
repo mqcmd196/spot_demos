@@ -32,7 +32,7 @@
 ;; (setq *3f-elevator-hall* (make-coords :pos #f(2012.483 -30869.959 0) :rpy (float-vector -pi/2 0 0))) original
 ;; (setq *7f-elevator-hall* (make-coords :pos #f(1850 -30746 0) :rpy (float-vector -pi/2 0 0)))
 (setq *2f-elevator-hall-1* (make-coords :pos #f(2088.555 -31225.784 0) :rpy (float-vector -pi/2 0 0)))
-(setq *3f-elevator-hall* (make-coords :pos #f(2088.555 -31225.784 0) :rpy (float-vector -pi/2 0 0)))
+(setq *3f-elevator-hall* (make-coords :pos #f(1984.285 -30750.828 0) :rpy (float-vector -pi/2 0 0)))
 (setq *7f-elevator-hall* (make-coords :pos #f(2088.555 -31225.784 0) :rpy (float-vector -pi/2 0 0)))
 (setq *2f-elevator* (make-coords :pos #f(2165.701 -33936.09 0) :rpy (float-vector pi/2 0 0)))
 (setq *3f-elevator* (make-coords :pos #f(2082.125 -33930.505 0) :rpy (float-vector pi/2 0 0)))
