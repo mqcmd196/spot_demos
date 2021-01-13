@@ -140,7 +140,7 @@
   ;; This function is cited from jsk_demos/elevator_move_base_pr2
   (let ((topic
          "/check_elevator_open/octree_change_publisher/octree_change_result")
-        (change-thre (ros::get-param "change_threshold" 400))
+        (change-thre (ros::get-param "change_threshold" 250))
         (change-pc nil) time-start)
     (send *fetch* :head :angle-vector #f(0 0))
     (send *ri* :angle-vector (send *fetch* :angle-vector) 400)
@@ -234,7 +234,7 @@
         (local-inflation-radius (ros::get-param "/move_base/local_costmap/inflater/inflation_radius"))
         (global-inflation-radius (ros::get-param "/move_base/global_costmap/inflater/inflation_radius"))
         (start-button)
-	(goal-button))
+        (goal-button))
     ;; speak which button to push
     (ros::ros-info "start floor:~d goal-floor:~d" start-floor goal-floor)
     (cond ((= start-floor goal-floor)
@@ -253,7 +253,7 @@
            (send *ri* :speak-jp (concatenate string (string start-floor) "階の上ボタンを押しました"))))
         
     ;; get on the elevator 
-    (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double 0.25)
+    (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double 0.1)
     (ros::set-dynamic-reconfigure-param "/move_base/global_costmap/inflater" "inflation_radius" :double 0.15)
     (check-elevator-open)
     (switchbot-topic goal-button "press") ;; press the destination's button
