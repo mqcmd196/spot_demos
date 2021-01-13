@@ -15,4 +15,7 @@
     <arg name="launch_audio_capture" value="false" />
     <arg name="launch_sound_play" value="false" />
   </include>
+
+  <!-- for using aques_talk -->
+  <include file="$(find aques_talk)/launch/aques_talk.launch" />
 </launch>

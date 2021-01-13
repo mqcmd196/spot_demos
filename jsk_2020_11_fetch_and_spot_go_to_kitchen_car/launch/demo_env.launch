@@ -4,6 +4,7 @@
   <arg name="fetch_bringup" default="false" />
   <arg name="switchbot_ros" default="true" />
   <arg name="elevator_move_base_fetch" default="true" />
+  <arg name="hsi_color_filter" default="true" />
 
   <!-- fetch_bringup options -->
   <arg name="battery_warning" default="false" />
@@ -34,6 +35,11 @@
   <group if="$(arg elevator_move_base_fetch)">
     <include file="$(find elevator_move_base_fetch)/launch/elevator_move_base_eng2.launch">
     </include>
+  </group>
+
+  <!-- for using hsi_color_filter -->
+  <group if="$(arg hsi_color_filter)">
+    <include file="$(find jsk_2020_11_fetch_and_spot_go_to_kitchen_car)/launch/hsi_color_filter.launch" />
   </group>
   
 </launch>
