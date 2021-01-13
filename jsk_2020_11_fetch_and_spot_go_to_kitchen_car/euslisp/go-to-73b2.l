@@ -5,8 +5,8 @@
 (unless (boundp '*elevator-action*) (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/elevator-action.l"))
 (unless (boundp '*utils*) (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/utils.l"))
 
-(setq *73b2-corridor-return* (make-coords :pos #f(-774.159 6709.777 0) :rpy (float-vector pi 0 0)))
-(setq *73b2-door-front-return* (make-coords :pos #f(1365.036 6617.811 0) :rpy (float-vector pi 0 0)))
+(setq *73b2-corridor-return* (make-coords :pos #f(-774.159 6709.777 0) :rpy (float-vector 0 0 0)))
+(setq *73b2-door-front-return* (make-coords :pos #f(1365.036 6617.811 0) :rpy (float-vector 0 0 0)))
 
 (setq *go-to-73b2* t)
 

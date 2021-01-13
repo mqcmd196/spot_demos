@@ -8,8 +8,8 @@
 (unless (boundp '*get-lunch-box*) (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/get-lunch-box.l"))
 (unless (boundp '*go-to-73b2*) (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/go-to-73b2.l"))
 
-(setq *73b2-door-front* (make-coords :pos #f(1365.036 6617.811 0) :rpy (float-vector 0 0 0)))
-(setq *73b2-corridor* (make-coords :pos #f(-774.159 6709.777 0) :rpy (float-vector 0 0 0)))
+(setq *73b2-door-front* (make-coords :pos #f(1365.036 6617.811 0) :rpy (float-vector pi 0 0)))
+(setq *73b2-corridor* (make-coords :pos #f(-774.159 6709.777 0) :rpy (float-vector pi 0 0)))
 
 (setq *demo* t)
 
@@ -23,13 +23,10 @@
     (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double local-inflation-radius)
     (ros::set-dynamic-reconfigure-param "/move_base/global_costmap/inflater" "inflation_radius" :double global-inflation-radius)))
   
-
 (defun kitchen-car-mission()
   (go-to-2f-hall)
   (pass-mission-from-fetch-to-spot)
   (get-lunch-box))
-
-
 
 (defun demo()
   (let ((default-xy-tolerance (ros::get-param "/move_base/TrajectoryPlannerROS/xy_goal_tolerance")) 
@@ -44,16 +41,18 @@
     (let ((missions (define-mission)))
       (cond ((and (member :kitchen missions) (member :office missions))
              (send *ri* :speak-jp "事務室に行ってからご飯を買ってきます" :wait t)
+	     (get-out-from-73b2)
              (go-to-office)
              (kitchen-car-mission)
              (go-to-73b2))
             ((member :kitchen missions)
              (send *ri* :speak-jp "ご飯を買ってきます" :wait t)
-             
+             (get-out-from-73b2)
              (kitchen-car-mission)
              (go-to-73b2))
             ((member :office missions)
              (send *ri* :speak-jp "事務室に行ってきます" :wait t)
+	     (get-out-from-73b2)
              (go-to-office)
              (go-to-73b2))
             (t
