@@ -17,19 +17,17 @@
   (when *bounding-box-list*
     (let* ((b (elt *bounding-box-list* 0))
            (base->obj-coords (ros::tf-pose->coords (send b :pose)))
-           (base-coords (send (send *fetch* :base_link_lk) :copy-worldcoords))
            (time-stamp (ros::time 0)))
       (when (ros::time> time-stamp (send msg :header :stamp)) ;;rostime揃え
         (return-from bounding-box-array-cb nil))
-      (ros::ros-info "tf")
-      (setq *obj-pos* (scale 0.001 (send (send base-coords :transform base->obj-coords) :worldpos)))
+      (setq *obj-pos* (scale 0.001 (send base->obj-coords :worldpos)))
       (setq *found-obj* t)
-      (print *obj-pos*)
       *obj-pos*)))
 
 ;; defun pass-box
 
 (defun wait-for-spot-arrived()
+  (send *fetch* :move-to (make-coords) :world) ;;reset pos for solving ik
   (send *fetch* :head :angle-vector #f(0 40))
   (send *ri* :angle-vector (send *fetch* :angle-vector ) 1000)
   (send *ri* :wait-interpolation)
@@ -49,10 +47,11 @@
   (when *found-obj*
     (send *ri* :speak-jp "かごが見つかりました" :wait t)
     (setq *box-handle-cds* (make-coords :pos (scale 1000 *obj-pos*)))
-    (send *box-handle-cds* :move-to (make-coords :pos #f(0 0 50)))
+    ;; (send *box-handle-cds* :move-to (make-coords :pos #f(0 0 50)))
     (send *box-handle-cds* :move-to (make-coords :pos #f(0 0 0) :rpy (float-vector 0 0 pi/2))) ;; rotate handle for grasping the box horizontally. translate?? move-to??
     (setq *box-handle-cds-front* (send *box-handle-cds* :copy-worldcoords))
     (send *box-handle-cds-front* :move-to (make-coords :pos #f(-300 0 0)))
+    (send *box-handle-cds-front* :move-to (make-coords :pos #f(0 150 0) :rpy (float-vector 0 0 0)))
     (setq *box-handle-cds-front-up* (send *box-handle-cds* :copy-worldcoords))
     ;; (send *box-handle-cds-front-up* :move-to (make-coords :pos #f(-300 0 )))
     (ros::ros-info (format nil "The box's handle: ~A" *box-handle-cds*))
@@ -66,14 +65,15 @@
     (send *ri* :angle-vector (send *fetch* :angle-vector) 3000) ;; torso down
     (send *ri* :wait-interpolation)
     ;; (send *ri* :angle-vector (send *fetch* :angle-vector #f(1.21309 40.8968 68.2157 -103.113 107.33 -134.776 51.0107 30.465 -0.583476 30.1874)) 10000) ;; move the end-coords in front of the handle FIXEDCOORDS
-    (send *fetch* :inverse-kinematics *box-handle-cds-front*
+    (send *fetch* :inverse-kinematics *box-handle-cds-front* 
 	  :rotation-axis :z) ;; move the end-coords in front of the handle
     (send *ri* :angle-vector (send *fetch* :angle-vector) 10000)
     (send *ri* :wait-interpolation)
     (send *ri* :stop-grasp)
     (send *ri* :wait-interpolation)
     ;; (send *ri* :angle-vector (send *fetch* :angle-vector #f(1.31227 18.9901 36.2894 -105.376 64.1762 -134.842 51.0107 -4.86706 -0.538157 30.1654)) 10000) ;; for catching the box FIXEDCOORDS
-    (send *fetch* :inverse-kinematics *box-handle-cds*) ;; for catching the box
+    (send *fetch* :inverse-kinematics *box-handle-cds*
+	  :rotation-axis :z) ;; for catching the box
     (send *ri* :angle-vector (send *fetch* :angle-vector) 10000)
     (send *ri* :wait-interpolation)
     (send *ri* :start-grasp) ;; grasping the box
