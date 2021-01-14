@@ -6,7 +6,9 @@
 (ros::roseus "boundingboxarray_subscriber")
 (ros::load-ros-manifest "jsk_recognition_msgs")
 
-;; (setq *get-box-position*)
+;; (setq *show-marker-position* (make-coords :pos #f(2084.663 -29291.919 0) :rpy (float-vector -pi/2 0 0)))
+(setq *show-marker-position* (make-coords :pos #f(1847.556 -28403.804 0) :rpy (float-vector -pi/2 0 0)))
+(setq *get-box-position* (make-coords :pos #f(2103.397 -27783.776 0) :rpy (float-vector pi/2 0 0)))
 
 (defun bounding-box-array-cb (msg)
   (ros::ros-info "cb called")
@@ -28,6 +30,9 @@
 ;; defun pass-box
 
 (defun wait-for-spot-arrived()
+  (send *fetch* :head :angle-vector #f(0 40))
+  (send *ri* :angle-vector (send *fetch* :angle-vector ) 1000)
+  (send *ri* :wait-interpolation)
   (setq *found-obj* nil)
   (ros::subscribe "/head_camera_remote/depth_registered/boxes" jsk_recognition_msgs::BoundingBoxArray #'bounding-box-array-cb 1)
   (while (not *found-obj*)
@@ -61,7 +66,8 @@
     (send *ri* :angle-vector (send *fetch* :angle-vector) 3000) ;; torso down
     (send *ri* :wait-interpolation)
     ;; (send *ri* :angle-vector (send *fetch* :angle-vector #f(1.21309 40.8968 68.2157 -103.113 107.33 -134.776 51.0107 30.465 -0.583476 30.1874)) 10000) ;; move the end-coords in front of the handle FIXEDCOORDS
-    (send *fetch* :inverse-kinematics *box-handle-cds-front*) ;; move the end-coords in front of the handle
+    (send *fetch* :inverse-kinematics *box-handle-cds-front*
+	  :rotation-axis :z) ;; move the end-coords in front of the handle
     (send *ri* :angle-vector (send *fetch* :angle-vector) 10000)
     (send *ri* :wait-interpolation)
     (send *ri* :stop-grasp)
