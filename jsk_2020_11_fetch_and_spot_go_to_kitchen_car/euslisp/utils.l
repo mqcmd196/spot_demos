@@ -38,7 +38,7 @@
   (ros::set-dynamic-reconfigure-param "/move_base/global_costmap/inflater" "inflation_radius" :double global-inflation-radius)
   (ros::set-dynamic-reconfigure-param "/move_base/TrajectoryPlannerROS" "max_vel_x" :double max-vel-x)
   (ros::set-dynamic-reconfigure-param "/move_base/TrajectoryPlannerROS" "min_vel_x" :double min-vel-x)
-  (ros::set-dynamic-reconfigure-param "/move_base" "clearing_rotation_allowed" :bool nil)
+  (ros::set-dynamic-reconfigure-param "/move_base" "clearing_rotation_allowed" :bool clearing-rotation)
   (unix:sleep 1)
   (send *ri* :clear-costmap))
 
