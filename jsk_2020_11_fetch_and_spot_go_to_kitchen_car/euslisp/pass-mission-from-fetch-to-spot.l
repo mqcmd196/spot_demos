@@ -6,6 +6,8 @@
 (ros::roseus "boundingboxarray_subscriber")
 (ros::load-ros-manifest "jsk_recognition_msgs")
 
+;; (setq *get-box-position*)
+
 (defun bounding-box-array-cb (msg)
   (ros::ros-info "cb called")
   (setq *bounding-box-list* (send msg :boxes)) ;; boxesは、BoundingBoxのArray(Euslispではlist)
@@ -25,12 +27,19 @@
 
 ;; defun pass-box
 
+(defun wait-for-spot-arrived()
+  (setq *found-obj* nil)
+  (ros::subscribe "/head_camera_remote/depth_registered/boxes" jsk_recognition_msgs::BoundingBoxArray #'bounding-box-array-cb 1)
+  (while (not *found-obj*)
+    (ros::spin-once))
+  (send *ri* :speak-jp "到着を確認しました" :wait t)
+  (unix:sleep 20))
+
 (defun get-box()
   (setq *found-obj* nil)
   ;; (objects (list *fetch* *box-handle-cds*))
   (ros::subscribe "/head_camera_remote/depth_registered/boxes" jsk_recognition_msgs::BoundingBoxArray #'bounding-box-array-cb 1)
   (while (not *found-obj*)
-    ;; (send *ri* :speak-jp "かごを探しています")
     (ros::spin-once))
   (when *found-obj*
     (send *ri* :speak-jp "かごが見つかりました" :wait t)
@@ -76,9 +85,12 @@
 
 (defun pass-mission-from-fetch-to-spot()
   ;; move to in the showing AR marker spot
+  (send *ri* :move-to *2f-elevator-hall-2* :frame-id "/map")
   ;; show the AR marker
+  (send *fetch* :torso :angle-vector #f(150))
+  (send *ri* :angle-vector (send *fetch* :angle-vector) 3000)
+  (send *ri* :wait-interpolation)
   (unix:sleep 60)
-  ;; detect the bounding box
-  (get-box)
-  ;; maware migi
-  )
+  (send *ri* :move-to *get-box-position* :frame-id "/map")
+  (wait-for-spot-arrived)
+  (get-box))
