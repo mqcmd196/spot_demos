@@ -7,8 +7,8 @@
 (ros::load-ros-manifest "jsk_recognition_msgs")
 
 ;; (setq *show-marker-position* (make-coords :pos #f(2084.663 -29291.919 0) :rpy (float-vector -pi/2 0 0)))
-(setq *show-marker-position* (make-coords :pos #f(1847.556 -28403.804 0) :rpy (float-vector -pi/2 0 0)))
-(setq *get-box-position* (make-coords :pos #f(2103.397 -27783.776 0) :rpy (float-vector pi/2 0 0)))
+(setq *show-marker-position* (make-coords :pos #f(1484.287 -28782.018 0) :rpy (float-vector -pi/2 0 0)))
+(setq *get-box-position* (make-coords :pos #f(1347.606 -27745.87 0) :rpy (float-vector pi/2 0 0)))
 
 (defun bounding-box-array-cb (msg)
   (ros::ros-info "cb called")
@@ -91,7 +91,7 @@
 
 (defun pass-mission-from-fetch-to-spot()
   ;; move to in the showing AR marker spot
-  (send *ri* :move-to *2f-elevator-hall-2* :frame-id "/map")
+  (send *ri* :move-to *show-marker-position* :frame-id "/map")
   ;; show the AR marker
   (send *fetch* :torso :angle-vector #f(150))
   (send *ri* :angle-vector (send *fetch* :angle-vector) 3000)

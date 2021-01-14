@@ -231,10 +231,11 @@
 
 (defun get-on-and-off-eng2-elevator(start-floor goal-floor)
   (let ((building "/eng2/")
-        (local-inflation-radius (ros::get-param "/move_base/local_costmap/inflater/inflation_radius"))
-        (global-inflation-radius (ros::get-param "/move_base/global_costmap/inflater/inflation_radius"))
+        ;; (local-inflation-radius (ros::get-param "/move_base/local_costmap/inflater/inflation_radius"))
+        ;; (global-inflation-radius (ros::get-param "/move_base/global_costmap/inflater/inflation_radius"))
         (start-button)
         (goal-button))
+    
     ;; speak which button to push
     (ros::ros-info "start floor:~d goal-floor:~d" start-floor goal-floor)
     (cond ((= start-floor goal-floor)
@@ -253,15 +254,16 @@
            (send *ri* :speak-jp (concatenate string (string start-floor) "階の上ボタンを押しました"))))
         
     ;; get on the elevator 
-    (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double 0.1)
-    (ros::set-dynamic-reconfigure-param "/move_base/global_costmap/inflater" "inflation_radius" :double 0.15)
+    ;; (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double 0.1)
+    ;; (ros::set-dynamic-reconfigure-param "/move_base/global_costmap/inflater" "inflation_radius" :double 0.15)
+    (change-dynamic-param :local-inflation-radius 0.1 :global-inflation-radius 0.1 :clearing-rotation nil)
     (check-elevator-open)
     (switchbot-topic start-button "press" :times 4 :sleep 5) ;; for remain open
     (send *ri* :speak-jp "前に進みます")
     (send *ri* :clear-costmap)
     (cond ((= start-floor 2)
            ;; (send *ri* :move-to *2f-elevator* :frame-id "/map" :wait t)
-           (send *ri* :go-pos 2.75 0 180))
+           (send *ri* :go-pos 3.0 0 180))
           ((= start-floor 3)
            ;; (send *ri* :move-to *3f-elevator* :frame-id "/map" :wait t)
            (send *ri* :go-pos 2.9 0 180))
@@ -286,5 +288,6 @@
     (send *ri* :go-pos 3.0 0 0)
     (unix:sleep 1)
     (send *ri* :speak-jp "エレベータからおりました" :wait t)
-    (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double local-inflation-radius)
-    (ros::set-dynamic-reconfigure-param "/move_base/global_costmap/inflater" "inflation_radius" :double global-inflation-radius)))
+    ;; (ros::set-dynamic-reconfigure-param "/move_base/local_costmap/inflater" "inflation_radius" :double local-inflation-radius)
+    ;; (ros::set-dynamic-reconfigure-param "/move_base/global_costmap/inflater" "inflation_radius" :double global-inflation-radius)
+    (change-dynamic-param)))
