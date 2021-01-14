@@ -3,12 +3,12 @@
 ;; initialize
 (load "package://spoteus/spot-interface.l")
 (load "package://jsk_2020_11_fetch_and_spot_go_to_kitchen_car/euslisp/speech-recognition-service.l")
-
+(unless (boundp '*ri*) (spot-init))
 
 (setq *get-kitchen-car-lunch* t)
 
 ;; Define kitchen car spot number. This is for auto-walk.
-(setq *filepath* "/home/obinata/spot_ws/src/spot_demos/jsk_2020_11_fetch_and_spot_go_to_kitchen_car/autowalk/2020-12-23 221838 kitchencar am3.walk")
+(setq *filepath* "/home/obinata/spot_ws/src/spot_demos/jsk_2020_11_fetch_and_spot_go_to_kitchen_car/autowalk/2021-01-14 021943 kitchen_car.walk")
 (setq *kitchen-car-number* 50)
 
 ;; for using AR marker detection
@@ -41,7 +41,7 @@
       ((msg (instance sound_play::SoundRequest :init)))
     (send msg :sound -3)
     (send msg :command 1)
-    (send msg :volume 8.0)
+    (send msg :volume 10.0)
     (send msg :arg sentence)
     (ros::publish "/robotsound_jp" msg)))
 
@@ -66,13 +66,15 @@
   (speak-jp "ありがとうございます．今から戻ります"))
 
 (defun go-to-2f-elevator-hall(start-number)
-  (send *ri* :navigate-to *filepath* -1 :initial-localization-fiducial t :initial-localization-waypoint start-number))
+  (send *ri* :navigate-to *filepath* -1 :initial-localization-fiducial t :initial-localization-waypoint start-number)
+  (send *ri* :sit))
 
 (defun get-kitchen-car-lunch()
-  (wait-for-detect-apriltag 202)
-  (go-to-kitchen-car 88)
+  (spot-init)
+  (wait-for-detect-apriltag 0)
+  (go-to-kitchen-car 91)
   (wait-at-kitchen-car)
   (require-lunch)
   (wait-for-julius-trigger "わたしました")
   (get-lunch)
-  (go-to-2f-elevator-hall 88))
+  (go-to-2f-elevator-hall 91))

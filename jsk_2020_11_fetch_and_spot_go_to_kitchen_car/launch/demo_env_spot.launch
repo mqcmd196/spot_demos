@@ -3,8 +3,8 @@
   <!-- You have to set config/tag.yml at first -->
   <include file="$(find apriltag_ros)/launch/continuous_detection.launch">
     <arg name="camera_name" value="/" />
-    <arg name="image_topic" value="/spot/camera/frontleft/image" />
-    <arg name="camera_frame" value="frontleft_fisheye" />
+    <arg name="image_topic" value="/spot/camera/frontright/image" />
+    <arg name="camera_frame" value="frontright_fisheye" />
   </include>
   
   <!-- for using respeaker_ros -->
