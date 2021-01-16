@@ -8,7 +8,7 @@
 (setq *get-kitchen-car-lunch* t)
 
 ;; Define kitchen car spot number. This is for auto-walk.
-(setq *filepath* "/home/obinata/spot_ws/src/spot_demos/jsk_2020_11_fetch_and_spot_go_to_kitchen_car/autowalk/2021-01-14 021943 kitchen_car.walk")
+(setq *filepath* "/home/obinata/spot_ws/src/spot_demos/jsk_2020_11_fetch_and_spot_go_to_kitchen_car/autowalk/2021-01-15 kitchencar3.walk")
 (setq *kitchen-car-number* 50)
 
 ;; for using AR marker detection
@@ -70,11 +70,10 @@
   (send *ri* :sit))
 
 (defun get-kitchen-car-lunch()
-  (spot-init)
   (wait-for-detect-apriltag 0)
-  (go-to-kitchen-car 91)
+  (go-to-kitchen-car 87)
   (wait-at-kitchen-car)
   (require-lunch)
   (wait-for-julius-trigger "わたしました")
   (get-lunch)
-  (go-to-2f-elevator-hall 91))
+  (go-to-2f-elevator-hall 87))
