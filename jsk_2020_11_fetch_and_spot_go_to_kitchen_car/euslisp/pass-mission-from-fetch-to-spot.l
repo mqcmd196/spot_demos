@@ -7,8 +7,8 @@
 (ros::load-ros-manifest "jsk_recognition_msgs")
 
 ;; (setq *show-marker-position* (make-coords :pos #f(2084.663 -29291.919 0) :rpy (float-vector -pi/2 0 0)))
-(setq *show-marker-position* (make-coords :pos #f(1484.287 -28782.018 0) :rpy (float-vector -pi/2 0 0)))
-(setq *get-box-position* (make-coords :pos #f(1347.606 -27745.87 0) :rpy (float-vector pi/2 0 0)))
+(setq *show-marker-position* (make-coords :pos #f(2481.15 -28635.8 0) :rpy (float-vector -pi/2 0 0)))
+(setq *get-box-position* (make-coords :pos #f(2285.944 -28014.204 0) :rpy (float-vector pi/2 0 0)))
 
 (defun bounding-box-array-cb (msg)
   (ros::ros-info "cb called")
@@ -28,8 +28,10 @@
 
 (defun wait-for-spot-arrived()
   (send *fetch* :move-to (make-coords) :world) ;;reset pos for solving ik
+  (send *ri* :angle-vector (send *fetch* :reset-pose) 4000)
+  (send *ri* :wait-interpolation)
   (send *fetch* :head :angle-vector #f(0 40))
-  (send *ri* :angle-vector (send *fetch* :angle-vector ) 1000)
+  (send *ri* :angle-vector (send *fetch* :angle-vector) 1000)
   (send *ri* :wait-interpolation)
   (setq *found-obj* nil)
   (ros::subscribe "/head_camera_remote/depth_registered/boxes" jsk_recognition_msgs::BoundingBoxArray #'bounding-box-array-cb 1)
@@ -41,6 +43,11 @@
 (defun get-box()
   (setq *found-obj* nil)
   ;; (objects (list *fetch* *box-handle-cds*))
+  (send *ri* :angle-vector (send *fetch* :reset-pose) 4000)
+  (send *ri* :wait-interpolation)
+  (send *fetch* :head :angle-vector #f(0 40))
+  (send *ri* :angle-vector (send *fetch* :angle-vector) 1000)
+  (send *ri* :wait-interpolation)
   (ros::subscribe "/head_camera_remote/depth_registered/boxes" jsk_recognition_msgs::BoundingBoxArray #'bounding-box-array-cb 1)
   (while (not *found-obj*)
     (ros::spin-once))
